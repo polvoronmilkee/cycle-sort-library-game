@@ -22,6 +22,7 @@ class GameLevel1 {
     this.wrongMoveCost = 20;
     this.gameActive = true;
     this.manaSystem = null;
+    this.handbookModal = null;
 
     this.init();
   }
@@ -57,6 +58,68 @@ class GameLevel1 {
 
   setupDOM() {
     document.body.classList.add("game-view");
+  }
+
+  async ensureHandbookModalLoaded() {
+    if (this.handbookModal) {
+      return true;
+    }
+
+    try {
+      const response = await fetch(
+        new URL("../components/modal.html", import.meta.url),
+      );
+
+      if (!response.ok) {
+        throw new Error(`Unable to load handbook modal: ${response.status}`);
+      }
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = await response.text();
+
+      const overlay = wrapper.querySelector("#modal-overlay");
+      const closeButton = wrapper.querySelector("#close-modal");
+
+      if (!overlay || !closeButton) {
+        throw new Error("Handbook modal markup is missing required elements.");
+      }
+
+      document.body.appendChild(overlay);
+
+      const closeModal = () => {
+        overlay.classList.add("hidden");
+        overlay.setAttribute("aria-hidden", "true");
+      };
+
+      closeButton.addEventListener("click", closeModal);
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !overlay.classList.contains("hidden")) {
+          closeModal();
+        }
+      });
+
+      this.handbookModal = { overlay, closeModal };
+      return true;
+    } catch (error) {
+      console.error("Failed to load handbook modal:", error);
+      this.showFeedback("Could not open handbook right now.", "error");
+      return false;
+    }
+  }
+
+  openHandbookModal() {
+    if (!this.handbookModal) {
+      return;
+    }
+
+    this.handbookModal.overlay.classList.remove("hidden");
+    this.handbookModal.overlay.setAttribute("aria-hidden", "false");
   }
 
   cacheElements() {
@@ -283,11 +346,11 @@ class GameLevel1 {
       location.reload();
     });
 
-    this.elements.hintBtn.addEventListener("click", () => {
-      this.showFeedback(
-        "Pick a misplaced book, place it at its true index, pick the displaced book, and repeat until the cycle closes.",
-        "info",
-      );
+    this.elements.hintBtn.addEventListener("click", async () => {
+      const loaded = await this.ensureHandbookModalLoaded();
+      if (loaded) {
+        this.openHandbookModal();
+      }
     });
 
     this.elements.homeBtn.addEventListener("click", () => {
