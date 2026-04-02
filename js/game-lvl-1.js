@@ -197,7 +197,7 @@ class GameLevel1 {
     const slot = document.getElementById("holding-slot");
     if (this.hand) {
       slot.classList.remove("empty");
-      slot.innerHTML = `<div class="book-in-hand">${this.hand.value}</div>`;
+      slot.innerHTML = `<div class="book-in-hand" data-number="${this.hand.value}"></div>`;
     } else {
       slot.classList.add("empty");
       slot.innerHTML = "";

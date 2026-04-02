@@ -94,17 +94,27 @@ body.game-view {
 }
 
 .book-in-hand {
-  width: 60px;
-  height: 80px;
-  background: linear-gradient(135deg, #b08c2d 0%, #d4a951 100%);
-  border: 2px solid #1a120c;
+  width: 110px;
+  height: 120px;
+  background-image: url("../assets/book-holding.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 8px;
+  margin-bottom: 30px;
+  
+}
+
+.book-in-hand::before {
+  content: attr(data-number);
   font-weight: bold;
   color: #1a120c;
-  font-size: 1.5rem;
-  transform: rotate(-15deg);
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* Center - Shelf */
