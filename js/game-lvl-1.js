@@ -51,7 +51,6 @@ class GameLevel1 {
       holdingSlot: document.getElementById("holding-slot"),
       manaLabel: document.getElementById("mana-label"),
       manaFill: document.getElementById("mana-fill"),
-      scoreDisplay: document.getElementById("score-display"),
       scorePar: document.getElementById("score-par"),
       moveDisplay: document.getElementById("move-display"),
       parIndicator: document.getElementById("par-indicator"),
@@ -67,7 +66,6 @@ class GameLevel1 {
   }
 
   updateScoreDisplay() {
-    this.elements.scoreDisplay.textContent = this.parScore;
     this.elements.scorePar.textContent = `Best: ${this.parScore}`;
     this.updateParIndicator();
   }

@@ -201,7 +201,6 @@ body.game-view {
   width: 200px;
   text-align: center;
   position: relative;
-  justify-content: center;
 }
 
 .score-display {
@@ -228,7 +227,7 @@ body.game-view {
 
 .score-value {
   position: absolute;
-  top: 30%;
+  top: 31%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 2.35rem;
@@ -240,20 +239,24 @@ body.game-view {
 
 .score-par {
   position: absolute;
-  top: 40%;
+  top: 25%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.6rem;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
   color: #ffd8b3;
   text-shadow: 3px 1px 0 #000000;
 }
 
 .score-moves {
   position: absolute;
-  top: 50%;
+  top: 38%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.58rem;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
   color: #ffdfb0;
   text-shadow: 2px 1px 0 #000000;
   white-space: nowrap;
@@ -261,20 +264,22 @@ body.game-view {
 
 .score-status {
   position: absolute;
-  top: 60%;
+  top: 50%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.56rem;
+  width: 100%;
+  text-align: center;
+  font-size: .7rem;
   text-shadow: 2px 1px 0 #000000;
   white-space: nowrap;
 }
 
 .score-status.under {
-  color: #8ff7a5;
+  color: #f78f8f;
 }
 
 .score-status.on {
-  color: #ffe38f;
+  color: #a0ff8f;
 }
 
 .score-status.over {
