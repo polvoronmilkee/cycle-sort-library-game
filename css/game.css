@@ -102,19 +102,24 @@ body.game-view {
   background-repeat: no-repeat;
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 8px;
   margin-bottom: 30px;
-  
 }
 
-.book-in-hand::before {
-  content: attr(data-number);
-  font-weight: bold;
-  color: #1a120c;
-  font-size: 1.2rem;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+.book-number {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bolder;
+  color: #fafafa;
+  text-shadow:
+    3px 3px 0 #6b4a18,
+    1px 1px 0 #2f2112;
+  font-size: 3rem;
+  pointer-events: none;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
 /* Center - Shelf */
