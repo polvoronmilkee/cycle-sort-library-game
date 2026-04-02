@@ -4,8 +4,8 @@ import { ManaSystem } from "./mana-system.js";
 class GameLevel1 {
   constructor() {
     this.level = 1;
-    this.books = ["C", "A", "D", "B", "E"];
     this.sortedBooks = ["A", "B", "C", "D", "E"];
+    this.books = this.createShuffledBooks(this.sortedBooks);
     this.bookArtMap = {
       A: "../assets/books/book-zero.png",
       B: "../assets/books/book-one.png",
@@ -24,6 +24,20 @@ class GameLevel1 {
     this.manaSystem = null;
 
     this.init();
+  }
+
+  createShuffledBooks(sourceBooks) {
+    const shuffled = [...sourceBooks];
+
+    // Keep shuffling until the starting state is not already solved.
+    do {
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+    } while (shuffled.every((value, index) => value === sourceBooks[index]));
+
+    return shuffled;
   }
 
   init() {
