@@ -3,12 +3,13 @@ import { CycleSort } from "./cycleSort.js";
 class GameLevel1 {
   constructor() {
     this.level = 1;
-    this.books = [3, 1, 4, 2]; // Out of order
+    this.books = [3, 1, 4, 2]; // Out of order - forms cycles
     this.sortedBooks = [1, 2, 3, 4]; // Target
     this.hand = null;
+    this.firstEmptyIndex = null; // Start of the active cycle chain
     this.moves = 0;
-    this.parScore = 5; // Perfect score for this level
-    this.maxMoves = 8; // Allowed moves
+    this.parScore = CycleSort.sort(this.books).totalWrites;
+    this.maxMoves = 8;
     this.gameActive = true;
 
     this.init();
@@ -55,7 +56,7 @@ class GameLevel1 {
           <div class="par-score">
             <div class="score-display">
               <div class="score-label">Par Score</div>
-              <div class="score-value" id="score-display">5</div>
+              <div class="score-value" id="score-display">${this.parScore}</div>
               <div class="score-par">Best: ${this.parScore}</div>
             </div>
           </div>
@@ -77,8 +78,8 @@ class GameLevel1 {
     display.innerHTML = this.books
       .map(
         (value, index) => `
-        <div class="book" data-index="${index}" data-value="${value}">
-          ${value}
+        <div class="book ${value === null ? "placeholder" : ""}" data-index="${index}" data-value="${value}">
+          ${value === null ? "_" : value}
         </div>
       `,
       )
@@ -90,34 +91,91 @@ class GameLevel1 {
     });
   }
 
+  /**
+   * Calculate where a book should go based on cycle sort logic
+   * Book goes to position = count of books smaller than it
+   */
+  calculateTrueIndex(bookValue) {
+    return this.books.filter((value) => value !== null && value < bookValue)
+      .length;
+  }
+
   handleBookClick(bookElement) {
     if (!this.gameActive) return;
 
-    const index = parseInt(bookElement.dataset.index);
-    const value = parseInt(bookElement.dataset.value);
+    const clickedIndex = parseInt(bookElement.dataset.index);
+    const rawValue = bookElement.dataset.value;
+    const clickedValue = rawValue === "null" ? null : parseInt(rawValue);
+
+    if (clickedValue === null && this.hand === null) {
+      this.showFeedback("Pick up a book first.", "error");
+      return;
+    }
 
     if (this.hand === null) {
-      // Pick up a book
-      this.hand = { value, index };
-      bookElement.classList.add("selected");
+      // Start a chain only from a misplaced book.
+      const pickedTrueIndex = this.calculateTrueIndex(clickedValue);
+      if (pickedTrueIndex === clickedIndex) {
+        this.showFeedback(
+          `Book ${clickedValue} is already in the correct spot. Pick a misplaced book.`,
+          "error",
+        );
+        return;
+      }
+
+      this.firstEmptyIndex = clickedIndex; // Remember the first hole created
+      this.hand = { value: clickedValue };
+      this.books[clickedIndex] = null;
+      this.renderBooks();
       this.updateHoldingSlot();
-      this.showFeedback(`Picked up: ${value}`, "info");
+
+      this.showFeedback(
+        `Picked up ${clickedValue}. Its true index is ${pickedTrueIndex}. Click that slot to continue the chain.`,
+        "info",
+      );
     } else {
-      // Swap with another book
-      this.swapBooks(this.hand.index, index);
-      this.hand = { value: parseInt(bookElement.dataset.value), index };
+      // Player must place held book into its true index.
+      const trueIndex = this.calculateTrueIndex(this.hand.value);
+
+      if (clickedIndex !== trueIndex) {
+        this.showFeedback(
+          `Wrong spot. Book ${this.hand.value} belongs at index ${trueIndex}.`,
+          "error",
+        );
+        return;
+      }
+
+      // Place held book and count one mana use.
       this.moves++;
       this.updateManaBar();
       this.updateMoveCounter();
-      this.renderBooks();
-      this.checkWinCondition();
-    }
-  }
 
-  swapBooks(fromIndex, toIndex) {
-    const temp = this.books[fromIndex];
-    this.books[fromIndex] = this.books[toIndex];
-    this.books[toIndex] = temp;
+      // Closing step: held book belongs to the original empty hole.
+      if (trueIndex === this.firstEmptyIndex) {
+        this.books[trueIndex] = this.hand.value;
+        this.hand = null;
+        this.firstEmptyIndex = null;
+        this.renderBooks();
+        this.updateHoldingSlot();
+        this.showFeedback(
+          `Cycle closed. Continue by picking another misplaced book.`,
+          "info",
+        );
+        this.checkWinCondition();
+      } else {
+        const displacedValue = this.books[clickedIndex];
+        this.books[clickedIndex] = this.hand.value;
+        this.hand = { value: displacedValue };
+        this.renderBooks();
+        this.updateHoldingSlot();
+
+        const nextIndex = this.calculateTrueIndex(displacedValue);
+        this.showFeedback(
+          `Now holding ${displacedValue}. Next true index: ${nextIndex}.`,
+          "info",
+        );
+      }
+    }
   }
 
   updateHoldingSlot() {
@@ -150,12 +208,12 @@ class GameLevel1 {
       this.gameActive = false;
       const message =
         this.moves <= this.parScore
-          ? `🎉 PERFECT! You sorted in ${this.moves} moves!`
-          : `✓ Level Complete! You used ${this.moves} moves (par: ${this.parScore})`;
+          ? `🎉 PERFECT! Sorted in ${this.moves} moves!`
+          : `✓ Level Complete! ${this.moves} moves (par: ${this.parScore})`;
       this.showFeedback(message, "success");
     } else if (this.moves >= this.maxMoves) {
       this.gameActive = false;
-      this.showFeedback("❌ Out of moves! Click Reset to try again.", "error");
+      this.showFeedback("❌ Out of mana! Click Reset to try again.", "error");
     }
   }
 
@@ -169,7 +227,7 @@ class GameLevel1 {
     feedback.classList.add("show");
     setTimeout(() => {
       feedback.classList.remove("show");
-    }, 2500);
+    }, 3500);
   }
 
   attachEventListeners() {
@@ -179,7 +237,7 @@ class GameLevel1 {
 
     document.getElementById("hint-btn").addEventListener("click", () => {
       this.showFeedback(
-        "Count smaller books. Swap them into their true position.",
+        "Pick a misplaced book, place it at its true index, pick displaced book, repeat until the chain returns to the starting hole.",
         "info",
       );
     });
