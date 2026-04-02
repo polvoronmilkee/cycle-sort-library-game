@@ -6,6 +6,7 @@
   --gold-dark: #b08c2d;
   --paper: #e7c98f;
   --paper-deep: #c8a365;
+  --sidebar-panel-width: 185px;
 }
 
 body.game-view {
@@ -59,7 +60,7 @@ body.game-view {
 
 /* Left Sidebar - Holding Slot */
 .sidebar {
-  width: 150px;
+  width: var(--sidebar-panel-width);
   text-align: center;
 }
 
@@ -77,20 +78,22 @@ body.game-view {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  width: 160px;
-  min-height: 180px;
-  padding: 30px 20px;
+  width: var(--sidebar-panel-width);
+  height: 205px;
+  padding: 34px 24px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
+  overflow: hidden;
 }
 
 .holding-slot.empty::after {
   content: "EMPTY";
   color: #f5e7bd;
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   text-shadow: 1px 1px 0 #2f2112;
+  margin-bottom: 30px;
 }
 
 .book-in-hand {
@@ -104,7 +107,7 @@ body.game-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .book-number {

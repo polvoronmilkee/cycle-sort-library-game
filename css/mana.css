@@ -1,6 +1,8 @@
 .mana-panel {
-  width: 100%;
+  width: var(--sidebar-panel-width);
   margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mana-title {
@@ -21,7 +23,7 @@
   margin-top: 1px;
   border-radius: 10px;
   border: 5px solid #973f38;
-  background:hsl(0, 0%, 0%);
+  background: hsl(0, 0%, 0%);
   overflow: hidden;
 }
 
@@ -53,8 +55,8 @@
   padding: 10px 8px 0;
   border-radius: 6px 6px 0 0;
   background: #2f0d08;
-  font-size: 0.55rem;
-  line-height: 1.4;
+  font-size: 0.7rem;
+  line-height: 2;
   color: #f2d174;
   text-align: center;
 }
@@ -64,7 +66,7 @@
   padding: 0 8px 10px;
   border-radius: 0 0 6px 6px;
   background: #2f0d08;
-  font-size: 0.5rem;
+  font-size: 0.7rem;
   color: #d9a161;
   line-height: 1.35;
   text-align: center;
