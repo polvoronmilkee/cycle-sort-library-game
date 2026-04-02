@@ -37,7 +37,6 @@ class GameLevel1 {
       <div class="game-container">
         <div class="game-header">
           <h1 class="game-title">LEVEL ${this.level}: THE ARCHIVE</h1>
-          <div class="level-info">Moves: <span id="move-counter">0</span></div>
         </div>
 
         <div class="game-main">
