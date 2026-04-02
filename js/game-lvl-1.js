@@ -189,6 +189,8 @@ class GameLevel1 {
     const trueIndex = this.calculateTrueIndex(this.hand.value);
 
     if (clickedIndex !== trueIndex) {
+      this.moves++;
+      this.updateMoveCounter();
       const stillHasMana = this.manaSystem.spendForWrongMove();
       this.updateManaUI();
       this.showFeedback(
