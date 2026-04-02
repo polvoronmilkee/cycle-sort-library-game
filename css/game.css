@@ -104,23 +104,6 @@ body.game-view {
   transform: rotate(-15deg);
 }
 
-.mana-bar {
-  display: flex;
-  gap: 4px;
-  margin-top: 15px;
-}
-
-.mana-slot {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--gold);
-  background: rgba(240, 211, 110, 0.2);
-}
-
-.mana-slot.used {
-  background: var(--gold);
-}
-
 /* Center - Shelf */
 .shelf-area {
   flex: 1;

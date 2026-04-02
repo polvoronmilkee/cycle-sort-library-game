@@ -1,4 +1,5 @@
 import { CycleSort } from "./cycleSort.js";
+import { ManaSystem } from "./mana-system.js";
 
 class GameLevel1 {
   constructor() {
@@ -9,14 +10,22 @@ class GameLevel1 {
     this.firstEmptyIndex = null; // Start of the active cycle chain
     this.moves = 0;
     this.parScore = CycleSort.sort(this.books).totalWrites;
-    this.maxMoves = 8;
+    this.manaMax = 100;
+    this.correctMoveCost = 5;
+    this.wrongMoveCost = 20;
     this.gameActive = true;
+    this.manaSystem = null;
 
     this.init();
   }
 
   init() {
     this.setupDOM();
+    this.manaSystem = new ManaSystem({
+      maxMana: this.manaMax,
+      correctMoveCost: this.correctMoveCost,
+      wrongMoveCost: this.wrongMoveCost,
+    });
     this.renderBooks();
     this.attachEventListeners();
   }
@@ -28,7 +37,7 @@ class GameLevel1 {
       <div class="game-container">
         <div class="game-header">
           <h1 class="game-title">LEVEL ${this.level}: THE ARCHIVE</h1>
-          <div class="level-info">Moves: <span id="move-counter">0</span> / ${this.maxMoves}</div>
+          <div class="level-info">Moves: <span id="move-counter">0</span></div>
         </div>
 
         <div class="game-main">
@@ -37,11 +46,12 @@ class GameLevel1 {
             <div class="sidebar-label">Holding Slot</div>
             <div id="holding-slot" class="holding-slot empty"></div>
             <div class="sidebar-label" style="margin-top: 20px;">Mana Bar</div>
-            <div id="mana-bar" class="mana-bar">
-              ${Array(this.maxMoves)
-                .fill(0)
-                .map((_, i) => `<div class="mana-slot" id="mana-${i}"></div>`)
-                .join("")}
+            <div class="mana-panel">
+              <div class="mana-track">
+                <div id="mana-fill" class="mana-fill"></div>
+              </div>
+              <p id="mana-label" class="mana-label">Mana: ${this.manaMax} / ${this.manaMax}</p>
+              <p class="mana-costs">Correct move: -${this.correctMoveCost} mana<br>Wrong index: -${this.wrongMoveCost} mana</p>
             </div>
           </div>
 
@@ -138,16 +148,20 @@ class GameLevel1 {
       const trueIndex = this.calculateTrueIndex(this.hand.value);
 
       if (clickedIndex !== trueIndex) {
+        const stillHasMana = this.manaSystem.spendForWrongMove();
         this.showFeedback(
-          `Wrong spot. Book ${this.hand.value} belongs at index ${trueIndex}.`,
+          `Wrong spot. Book ${this.hand.value} belongs at index ${trueIndex}. (-${this.wrongMoveCost} mana)`,
           "error",
         );
+        if (!stillHasMana) {
+          this.checkWinCondition();
+        }
         return;
       }
 
-      // Place held book and count one mana use.
+      // Place held book and spend mana for a correct move.
       this.moves++;
-      this.updateManaBar();
+      this.manaSystem.spendForCorrectMove();
       this.updateMoveCounter();
 
       // Closing step: held book belongs to the original empty hole.
@@ -171,9 +185,10 @@ class GameLevel1 {
 
         const nextIndex = this.calculateTrueIndex(displacedValue);
         this.showFeedback(
-          `Now holding ${displacedValue}. Next true index: ${nextIndex}.`,
+          `Correct move (-${this.correctMoveCost} mana). Now holding ${displacedValue}. Next true index: ${nextIndex}.`,
           "info",
         );
+        this.checkWinCondition();
       }
     }
   }
@@ -186,12 +201,6 @@ class GameLevel1 {
     } else {
       slot.classList.add("empty");
       slot.innerHTML = "";
-    }
-  }
-
-  updateManaBar() {
-    for (let i = 0; i < this.moves && i < this.maxMoves; i++) {
-      document.getElementById(`mana-${i}`).classList.add("used");
     }
   }
 
@@ -211,9 +220,9 @@ class GameLevel1 {
           ? `🎉 PERFECT! Sorted in ${this.moves} moves!`
           : `✓ Level Complete! ${this.moves} moves (par: ${this.parScore})`;
       this.showFeedback(message, "success");
-    } else if (this.moves >= this.maxMoves) {
+    } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
-      this.showFeedback("❌ Out of mana! Click Reset to try again.", "error");
+      this.showFeedback("Out of mana. Click Reset to try again.", "error");
     }
   }
 

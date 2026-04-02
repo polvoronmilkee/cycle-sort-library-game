@@ -1,0 +1,42 @@
+.mana-panel {
+  margin-top: 14px;
+  padding: 10px;
+  border: 2px solid #f0d36e;
+  background: rgba(15, 10, 7, 0.78);
+}
+
+.mana-track {
+  width: 100%;
+  height: 18px;
+  border: 2px solid #f0d36e;
+  background: rgba(240, 211, 110, 0.15);
+  overflow: hidden;
+}
+
+.mana-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #3ca9ff, #6de3ff);
+  transition: width 180ms ease;
+}
+
+.mana-fill.low {
+  background: linear-gradient(90deg, #ffb347, #ffd36e);
+}
+
+.mana-fill.critical {
+  background: linear-gradient(90deg, #ff4d4d, #ff8080);
+}
+
+.mana-label {
+  margin-top: 8px;
+  font-size: 0.55rem;
+  color: #f5e7bd;
+}
+
+.mana-costs {
+  margin-top: 6px;
+  font-size: 0.5rem;
+  color: #d8c58a;
+  line-height: 1.5;
+}
