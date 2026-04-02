@@ -43,7 +43,7 @@ class GameLevel1 {
         <div class="game-main">
           <!-- Left: Holding Slot -->
           <div class="sidebar">
-            <div class="sidebar-label">Holding Slot</div>
+            <div class="sidebar-label"></div>
             <div id="holding-slot" class="holding-slot empty"></div>
             <div class="sidebar-label" style="margin-top: 20px;">Mana Bar</div>
             <div class="mana-panel">
