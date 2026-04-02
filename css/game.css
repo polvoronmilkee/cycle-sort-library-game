@@ -112,7 +112,7 @@ body.game-view {
 
 .book-number {
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-weight: bolder;
@@ -128,15 +128,16 @@ body.game-view {
 /* Center - Shelf */
 .shelf-area {
   flex: 1;
-  max-width: 600px;
+  max-width: 760px;
 }
 
 .shelf-container {
+  width: 100%;
   background-image: url("../assets/shelf.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  aspect-ratio: 16 / 15;
+  aspect-ratio: 16 / 12;
   position: relative;
 }
 
@@ -144,14 +145,15 @@ body.game-view {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  gap: 15px;
-  padding: 40px 20px;
+  gap: 3px;
+  padding: 72px 56px 200px;
+  box-sizing: border-box;
 }
 
 .book {
-  width: 70px;
+  width: 50px;
   height: 90px;
   background: linear-gradient(135deg, #f0a84b 0%, #d4901e 100%);
   border: 3px solid #1a120c;
@@ -160,7 +162,7 @@ body.game-view {
   justify-content: center;
   font-weight: bold;
   color: #1a120c;
-  font-size: 1.8rem;
+  font-size: 1rem;
   cursor: pointer;
   transition:
     transform 100ms ease,
@@ -317,13 +319,13 @@ body.game-view {
   }
 
   .book {
-    width: 50px;
+    width: 44px;
     height: 70px;
-    font-size: 1.2rem;
+    font-size: 1.05rem;
   }
 
   .books-display {
     gap: 10px;
-    padding: 30px 10px;
+    padding: 64px 20px 132px;
   }
 }

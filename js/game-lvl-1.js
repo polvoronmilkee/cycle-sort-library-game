@@ -4,8 +4,8 @@ import { ManaSystem } from "./mana-system.js";
 class GameLevel1 {
   constructor() {
     this.level = 1;
-    this.books = [3, 1, 4, 2]; // Out of order - forms cycles
-    this.sortedBooks = [1, 2, 3, 4]; // Target
+    this.books = ["C", "A", "D", "B", "E", "F"]; // Out of order - forms cycles
+    this.sortedBooks = ["A", "B", "C", "D", "E", "F"]; // Target
     this.hand = null;
     this.firstEmptyIndex = null; // Start of the active cycle chain
     this.moves = 0;
@@ -76,8 +76,11 @@ class GameLevel1 {
     display.innerHTML = this.books
       .map(
         (value, index) => `
-        <div class="book ${value === null ? "placeholder" : ""}" data-index="${index}" data-value="${value}">
-          ${value === null ? "_" : value}
+        <div class="book-slot" data-slot-index="${index}">
+          <div class="book ${value === null ? "placeholder" : ""}" data-index="${index}" data-value="${value}">
+            ${value === null ? "_" : value}
+          </div>
+          <div class="book-index" aria-hidden="true">${index}</div>
         </div>
       `,
       )
@@ -103,7 +106,7 @@ class GameLevel1 {
 
     const clickedIndex = parseInt(bookElement.dataset.index);
     const rawValue = bookElement.dataset.value;
-    const clickedValue = rawValue === "null" ? null : parseInt(rawValue);
+    const clickedValue = rawValue === "null" ? null : rawValue;
 
     if (clickedValue === null && this.hand === null) {
       this.showFeedback("Pick up a book first.", "error");
