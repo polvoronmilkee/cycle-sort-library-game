@@ -21,69 +21,53 @@ class GameLevel1 {
 
   init() {
     this.setupDOM();
+    this.cacheElements();
     this.manaSystem = new ManaSystem({
       maxMana: this.manaMax,
       correctMoveCost: this.correctMoveCost,
       wrongMoveCost: this.wrongMoveCost,
     });
+    this.updateManaLabel();
+    this.updateScoreDisplay();
     this.renderBooks();
     this.attachEventListeners();
   }
 
   setupDOM() {
     document.body.classList.add("game-view");
-    const main = document.querySelector("main") || document.body;
-    main.innerHTML = `
-      <div class="game-container">
-        <div class="game-header">
-          <h1 class="game-title">LEVEL ${this.level}: THE ARCHIVE</h1>
-        </div>
+  }
 
-        <div class="game-main">
-          <!-- Left: Holding Slot -->
-          <div class="sidebar">
-            <div class="sidebar-label"></div>
-            <div id="holding-slot" class="holding-slot empty"></div>
-            <div class="sidebar-label" style="margin-top: 20px;">Mana Bar</div>
-            <div class="mana-panel">
-              <div class="mana-track">
-                <div id="mana-fill" class="mana-fill"></div>
-              </div>
-              <p id="mana-label" class="mana-label">Mana: ${this.manaMax} / ${this.manaMax}</p>
-              <p class="mana-costs">Correct move: -${this.correctMoveCost} mana<br>Wrong index: -${this.wrongMoveCost} mana</p>
-            </div>
-          </div>
+  cacheElements() {
+    this.elements = {
+      booksDisplay: document.getElementById("books-display"),
+      holdingSlot: document.getElementById("holding-slot"),
+      manaLabel: document.getElementById("mana-label"),
+      manaFill: document.getElementById("mana-fill"),
+      scoreDisplay: document.getElementById("score-display"),
+      resetBtn: document.getElementById("reset-btn"),
+      hintBtn: document.getElementById("hint-btn"),
+      homeBtn: document.getElementById("home-btn"),
+      feedback: document.getElementById("feedback"),
+      gameTitle: document.querySelector(".game-title"),
+    };
+  }
 
-          <!-- Center: Shelf -->
-          <div class="shelf-area">
-            <div class="shelf-container">
-              <div id="books-display" class="books-display"></div>
-            </div>
-          </div>
+  updateManaLabel() {
+    this.elements.manaLabel.textContent = `Mana: ${this.manaSystem.currentMana} / ${this.manaMax}`;
+  }
 
-          <!-- Right: Par Score -->
-          <div class="par-score">
-            <div class="score-display">
-              <div class="score-label">Par Score</div>
-              <div class="score-value" id="score-display">${this.parScore}</div>
-              <div class="score-par">Best: ${this.parScore}</div>
-            </div>
-          </div>
-        </div>
+  updateScoreDisplay() {
+    this.elements.scoreDisplay.textContent = this.parScore;
+  }
 
-        <div class="game-footer">
-          <button class="btn-game secondary" id="reset-btn">Reset</button>
-          <button class="btn-game secondary" id="hint-btn">How To Play</button>
-          <button class="btn-game" id="home-btn">Back to Menu</button>
-        </div>
-      </div>
-
-      <div id="feedback" class="feedback"></div>
-    `;
+  updateManaUI() {
+    const percentage = (this.manaSystem.currentMana / this.manaMax) * 100;
+    this.elements.manaFill.style.width = `${percentage}%`;
+    this.updateManaLabel();
   }
 
   renderBooks() {
-    const display = document.getElementById("books-display");
+    const display = this.elements.booksDisplay;
     display.innerHTML = this.books
       .map(
         (value, index) => `
@@ -95,7 +79,7 @@ class GameLevel1 {
       .join("");
 
     // Add click handlers to books
-    document.querySelectorAll(".book").forEach((book) => {
+    display.querySelectorAll(".book").forEach((book) => {
       book.addEventListener("click", () => this.handleBookClick(book));
     });
   }
@@ -148,6 +132,7 @@ class GameLevel1 {
 
       if (clickedIndex !== trueIndex) {
         const stillHasMana = this.manaSystem.spendForWrongMove();
+        this.updateManaUI();
         this.showFeedback(
           `Wrong spot. Book ${this.hand.value} belongs at index ${trueIndex}. (-${this.wrongMoveCost} mana)`,
           "error",
@@ -161,6 +146,7 @@ class GameLevel1 {
       // Place held book and spend mana for a correct move.
       this.moves++;
       this.manaSystem.spendForCorrectMove();
+      this.updateManaUI();
       this.updateMoveCounter();
 
       // Closing step: held book belongs to the original empty hole.
@@ -193,7 +179,7 @@ class GameLevel1 {
   }
 
   updateHoldingSlot() {
-    const slot = document.getElementById("holding-slot");
+    const slot = this.elements.holdingSlot;
     if (this.hand) {
       slot.classList.remove("empty");
       slot.innerHTML = `<div class="book-in-hand"><span class="book-number">${this.hand.value}</span></div>`;
@@ -204,7 +190,7 @@ class GameLevel1 {
   }
 
   updateMoveCounter() {
-    document.getElementById("move-counter").textContent = this.moves;
+    // Move counter display is optional - implement if needed
   }
 
   checkWinCondition() {
@@ -226,7 +212,7 @@ class GameLevel1 {
   }
 
   showFeedback(message, type = "info") {
-    const feedback = document.getElementById("feedback");
+    const feedback = this.elements.feedback;
     feedback.textContent = message;
     feedback.classList.remove("error", "success");
     if (type !== "info") {
@@ -239,18 +225,18 @@ class GameLevel1 {
   }
 
   attachEventListeners() {
-    document.getElementById("reset-btn").addEventListener("click", () => {
+    this.elements.resetBtn.addEventListener("click", () => {
       location.reload();
     });
 
-    document.getElementById("hint-btn").addEventListener("click", () => {
+    this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(
         "Pick a misplaced book, place it at its true index, pick displaced book, repeat until the chain returns to the starting hole.",
         "info",
       );
     });
 
-    document.getElementById("home-btn").addEventListener("click", () => {
+    this.elements.homeBtn.addEventListener("click", () => {
       window.location.href = "../index.html";
     });
   }
