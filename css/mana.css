@@ -1,42 +1,80 @@
 .mana-panel {
-  margin-top: 14px;
-  padding: 10px;
-  border: 2px solid #f0d36e;
-  background: rgba(15, 10, 7, 0.78);
+  width: 100%;
+  margin-top: 50px;
+}
+
+.mana-title {
+  width: 80%;
+  height: 44px;
+  background-image: url("../assets/mana-bar-text.png");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: top center;
+  text-align: center;
+  justify-self: center;
 }
 
 .mana-track {
+  position: relative;
   width: 100%;
-  height: 18px;
-  border: 2px solid #f0d36e;
-  background: rgba(240, 211, 110, 0.15);
+  height: 28px;
+  margin-top: 1px;
+  border-radius: 10px;
+  border: 5px solid #973f38;
+  background:hsl(0, 0%, 0%);
   overflow: hidden;
 }
 
 .mana-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, #3ca9ff, #6de3ff);
-  transition: width 180ms ease;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #6aa8ff 0%, #4f8fff 100%);
+  /* border-radius: px; */
+  transition:
+    width 220ms ease,
+    filter 220ms ease;
 }
 
 .mana-fill.low {
-  background: linear-gradient(90deg, #ffb347, #ffd36e);
+  background: linear-gradient(90deg, #f7bf5f 0%, #e8943f 100%);
 }
 
 .mana-fill.critical {
-  background: linear-gradient(90deg, #ff4d4d, #ff8080);
+  background: linear-gradient(90deg, #ff7c62 0%, #f14d4d 100%);
+  animation: mana-pulse 700ms ease-in-out infinite alternate;
 }
 
 .mana-label {
-  margin-top: 8px;
+  margin-top: 6px;
+  padding: 10px 8px 0;
+  border-radius: 6px 6px 0 0;
+  background: #2f0d08;
   font-size: 0.55rem;
-  color: #f5e7bd;
+  line-height: 1.4;
+  color: #f2d174;
+  text-align: center;
 }
 
 .mana-costs {
-  margin-top: 6px;
+  margin-top: 0;
+  padding: 0 8px 10px;
+  border-radius: 0 0 6px 6px;
+  background: #2f0d08;
   font-size: 0.5rem;
-  color: #d8c58a;
-  line-height: 1.5;
+  color: #d9a161;
+  line-height: 1.35;
+  text-align: center;
+}
+
+@keyframes mana-pulse {
+  from {
+    filter: drop-shadow(0 0 0 rgba(255, 110, 72, 0));
+  }
+  to {
+    filter: drop-shadow(0 0 6px rgba(255, 110, 72, 0.75));
+  }
 }

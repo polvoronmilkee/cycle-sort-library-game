@@ -27,7 +27,7 @@ class GameLevel1 {
       correctMoveCost: this.correctMoveCost,
       wrongMoveCost: this.wrongMoveCost,
     });
-    this.updateManaLabel();
+    this.updateManaUI();
     this.updateScoreDisplay();
     this.renderBooks();
     this.attachEventListeners();
@@ -63,6 +63,11 @@ class GameLevel1 {
   updateManaUI() {
     const percentage = (this.manaSystem.currentMana / this.manaMax) * 100;
     this.elements.manaFill.style.width = `${percentage}%`;
+    this.elements.manaFill.classList.toggle(
+      "low",
+      percentage <= 45 && percentage > 20,
+    );
+    this.elements.manaFill.classList.toggle("critical", percentage <= 20);
     this.updateManaLabel();
   }
 
