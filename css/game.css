@@ -198,35 +198,87 @@ body.game-view {
 
 /* Right Sidebar - Par Score */
 .par-score {
-  width: 150px;
+  width: 200px;
   text-align: center;
+  position: relative;
+  justify-content: center;
 }
 
 .score-display {
-  background: rgba(15, 10, 7, 0.8);
-  border: 4px solid var(--gold);
-  padding: 20px;
-  border-radius: 4px;
+  width: 100%;
+  aspect-ratio: 512 / 632;
+  background-image: url("../assets/par-score.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
 .score-label {
-  font-size: 0.6rem;
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 10px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .score-value {
-  font-size: 2rem;
-  color: var(--gold);
-  text-shadow: 1px 1px 0 #2f2112;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.35rem;
+  color: #ffdea5;
+  text-shadow:
+    4px 3px 0 #6d3603,
+    1px 1px 0 #2f2112;
 }
 
 .score-par {
-  font-size: 0.5rem;
-  color: #f5e7bd;
-  margin-top: 8px;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: #ffd8b3;
+  text-shadow: 3px 1px 0 #000000;
+}
+
+.score-moves {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.58rem;
+  color: #ffdfb0;
+  text-shadow: 2px 1px 0 #000000;
+  white-space: nowrap;
+}
+
+.score-status {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.56rem;
+  text-shadow: 2px 1px 0 #000000;
+  white-space: nowrap;
+}
+
+.score-status.under {
+  color: #8ff7a5;
+}
+
+.score-status.on {
+  color: #ffe38f;
+}
+
+.score-status.over {
+  color: #ff9a85;
 }
 
 /* Game Footer */

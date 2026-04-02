@@ -36,6 +36,7 @@ class GameLevel1 {
     });
     this.updateManaUI();
     this.updateScoreDisplay();
+    this.updateMoveCounter();
     this.renderBooks();
     this.attachEventListeners();
   }
@@ -51,6 +52,9 @@ class GameLevel1 {
       manaLabel: document.getElementById("mana-label"),
       manaFill: document.getElementById("mana-fill"),
       scoreDisplay: document.getElementById("score-display"),
+      scorePar: document.getElementById("score-par"),
+      moveDisplay: document.getElementById("move-display"),
+      parIndicator: document.getElementById("par-indicator"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
       homeBtn: document.getElementById("home-btn"),
@@ -64,6 +68,34 @@ class GameLevel1 {
 
   updateScoreDisplay() {
     this.elements.scoreDisplay.textContent = this.parScore;
+    this.elements.scorePar.textContent = `Best: ${this.parScore}`;
+    this.updateParIndicator();
+  }
+
+  updateMoveCounter() {
+    this.elements.moveDisplay.textContent = this.moves;
+    this.updateParIndicator();
+  }
+
+  updateParIndicator() {
+    const delta = this.moves - this.parScore;
+    const indicator = this.elements.parIndicator;
+    indicator.classList.remove("under", "on", "over");
+
+    if (delta < 0) {
+      indicator.textContent = `${Math.abs(delta)} Under Par`;
+      indicator.classList.add("under");
+      return;
+    }
+
+    if (delta === 0) {
+      indicator.textContent = "On Par";
+      indicator.classList.add("on");
+      return;
+    }
+
+    indicator.textContent = `${delta} Over Par`;
+    indicator.classList.add("over");
   }
 
   updateManaUI() {
@@ -160,6 +192,7 @@ class GameLevel1 {
     this.moves++;
     this.manaSystem.spendForCorrectMove();
     this.updateManaUI();
+    this.updateMoveCounter();
 
     if (trueIndex === this.firstEmptyIndex) {
       this.books[trueIndex] = this.hand.value;
