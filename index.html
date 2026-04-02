@@ -11,26 +11,25 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/modal.css" />
   </head>
   <body>
     <main class="landing" aria-label="Game landing page">
       <section class="hero">
-        <h1 class="title">THE<br/>CYCLEBRIARIAN</h1>
+        <h1 class="title">THE<br />CYCLEBRIARIAN</h1>
         <p class="tagline">"The shortest path to an order is a cycle."</p>
-        <button class="cta" id="play-btn" type="button">LET'S PLAY!</button>
+        <div class="btn-container">
+          <button class="cta" id="instructions-btn" type="button">
+            HOW TO PLAY
+          </button>
+          <button class="cta" id="play-btn" type="button">LET'S PLAY!</button>
+        </div>
         <p class="hint">Created by Dani and Mari</p>
       </section>
-
-      
     </main>
 
-    <script>
-      document.getElementById("play-btn").addEventListener("click", () => {
-        alert(
-          "Next step: we will connect this button to the first playable level.",
-        );
-      });
-    </script>
+    <div id="modal-root"></div>
 
+    <script type="module" src="js/modal.js"></script>
   </body>
 </html>

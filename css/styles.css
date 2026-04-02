@@ -12,6 +12,10 @@
   padding: 0;
 }
 
+.hidden {
+  display: none !important;
+}
+
 html,
 body {
   min-height: 100%;
@@ -75,14 +79,23 @@ body {
   box-shadow: 0 8px 0 rgba(0, 0, 0, 0.35);
 }
 
+.btn-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+
 .cta {
   appearance: none;
   border: 5px solid #000;
   background: var(--gold);
+  width: min(px, 100%);
+  margin-inline: auto;
   color: #141004;
   font-family: inherit;
   text-transform: uppercase;
-  font-size: clamp(0.85rem, 2.2vw, 1.5rem);
+  font-size: clamp(0.80rem, 2.2vw, 1.4rem);
   padding: 0.9rem 2rem;
   letter-spacing: 0.08em;
   cursor: pointer;
@@ -93,8 +106,12 @@ body {
     background 110ms ease;
 }
 
+#instructions-btn {
+  background: #c5aa74;
+}
+
 .cta:hover {
-  background: #f8df84;
+  background: #e7cf75;
 }
 
 .cta:active {
@@ -107,7 +124,6 @@ body {
   font-size: clamp(0.52rem, 1.3vw, 0.82rem);
   color: #f5e7bd;
   opacity: 0.95;
-  margin-left: -12px;
 }
 
 @media (max-width: 640px) {
