@@ -48,7 +48,7 @@ body {
 
 .title {
   font-size: 80px;
-  line-height: 0.95;
+  line-height: 1.1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--gold);
@@ -103,10 +103,11 @@ body {
 }
 
 .hint {
-  margin-top: 0.95rem;
+  margin-top: 30px;
   font-size: clamp(0.52rem, 1.3vw, 0.82rem);
   color: #f5e7bd;
   opacity: 0.95;
+  margin-left: -12px;
 }
 
 @media (max-width: 640px) {
