@@ -122,93 +122,104 @@ class GameLevel3 {
   }
 
   handleBookClick(bookElement) {
-    if (!this.gameActive) return;
+  if (!this.gameActive) return;
 
-    const clickedIndex = parseInt(bookElement.dataset.index);
-    const rawValue = bookElement.dataset.value;
-    const clickedValue = rawValue === "null" ? null : parseInt(rawValue);
+  const clickedIndex = parseInt(bookElement.dataset.index);
+  const rawValue = bookElement.dataset.value;
+  const clickedValue = rawValue === "null" ? null : parseInt(rawValue);
 
-    const isLocked = this.lockedIndices.includes(clickedIndex);
+  const isLocked = this.lockedIndices.includes(clickedIndex);
 
-    // if player picks up correct book
-    if (isLocked && this.hand === null) {
-      this.manaSystem.currentMana -= this.lockedPenalty;
-      this.updateManaUI();
+// PICK UP LOGIC
+if (this.hand === null) {
+  if (clickedValue === null) {
+    this.showFeedback("Pick up a book first.", "error");
+    return;
+  }
 
-      // remove from locked list
-      this.lockedIndices = this.lockedIndices.filter((i) => i !== clickedIndex);
+  // Calculate the true index immediately to use in feedback
+  const trueIndex = this.calculateTrueIndex(clickedValue);
 
+  // PENALTY LOGIC: If player picks up a book that was already correct
+  if (isLocked) {
+    this.manaSystem.currentMana -= this.lockedPenalty;
+    this.updateManaUI();
+
+    this.lockedIndices = this.lockedIndices.filter((i) => i !== clickedIndex);
+
+    if (this.manaSystem.currentMana <= 0) {
+      this.gameActive = false;
       this.showFeedback(
-        `You moved a correct book! (-${this.lockedPenalty} mana)`,
-        "error",
+        `Mana depleted! Moving a correct book cost you the last of your energy.`,
+        "error"
       );
+      this.checkWinCondition();
+      return; 
     }
 
-    if (clickedValue === null && this.hand === null) {
-      this.showFeedback("Pick up a book first.", "error");
+    // UPDATED FEEDBACK: Matches your required format even on penalty
+    this.showFeedback(
+      `Violation! Picked up ${clickedValue}. Goes to index ${trueIndex}. (-${this.lockedPenalty} mana)`,
+      "error"
+    );
+  } else {
+    // STANDARD PICKUP FEEDBACK
+    this.showFeedback(
+      `Picked up ${clickedValue}. Goes to index ${trueIndex}.`,
+      "info"
+    );
+  }
+
+  this.firstEmptyIndex = clickedIndex;
+  this.hand = { value: clickedValue };
+  this.books[clickedIndex] = null;
+
+  this.renderBooks();
+  this.updateHoldingSlot();
+}
+  // PLACE LOGIC
+  else {
+    const trueIndex = this.calculateTrueIndex(this.hand.value);
+
+    if (clickedIndex !== trueIndex) {
+      const stillHasMana = this.manaSystem.spendForWrongMove();
+      this.updateManaUI();
+      this.showFeedback(`Wrong spot! (-${this.wrongMoveCost} mana)`, "error");
+      if (!stillHasMana) this.checkWinCondition();
       return;
     }
 
-    // PICK UP
-    if (this.hand === null) {
-      this.firstEmptyIndex = clickedIndex;
-      this.hand = { value: clickedValue };
-      this.books[clickedIndex] = null;
+    // Correct placement logic
+    this.moves++;
+    this.manaSystem.spendForCorrectMove();
+    this.updateManaUI();
 
-      this.renderBooks();
-      this.updateHoldingSlot();
-
-      const trueIndex = this.calculateTrueIndex(clickedValue);
-      this.showFeedback(
-        `Picked up ${clickedValue}. Goes to index ${trueIndex}.`,
-        "info",
-      );
-    }
-    // PLACE
-    else {
-      const trueIndex = this.calculateTrueIndex(this.hand.value);
-
-      if (clickedIndex !== trueIndex) {
-        const stillHasMana = this.manaSystem.spendForWrongMove();
-        this.updateManaUI();
-        this.showFeedback(`Wrong spot! (-${this.wrongMoveCost} mana)`, "error");
-        if (!stillHasMana) this.checkWinCondition();
-        return;
+    if (trueIndex === this.firstEmptyIndex) {
+      // Cycle closed
+      this.books[trueIndex] = this.hand.value;
+      if (!this.lockedIndices.includes(trueIndex)) {
+        this.lockedIndices.push(trueIndex);
       }
-
-      // correct move
-      this.moves++;
-      this.manaSystem.spendForCorrectMove();
-      this.updateManaUI();
-
-      if (trueIndex === this.firstEmptyIndex) {
-        // cycle closed
-        this.books[trueIndex] = this.hand.value;
-
-        // lock correct position
-        if (!this.lockedIndices.includes(trueIndex)) {
-          this.lockedIndices.push(trueIndex);
-        }
-
-        this.hand = null;
-        this.firstEmptyIndex = null;
-
-        this.renderBooks();
-        this.updateHoldingSlot();
-        this.showFeedback("Cycle closed!", "success");
-      } else {
-        const displaced = this.books[clickedIndex];
-        this.books[clickedIndex] = this.hand.value;
-        this.hand = { value: displaced };
-
-        this.renderBooks();
-        this.updateHoldingSlot();
-        this.showFeedback(`Now holding ${displaced}`, "info");
+      this.hand = null;
+      this.firstEmptyIndex = null;
+      this.showFeedback("Cycle closed!", "success");
+    } else {
+      // Swapping books
+      const displaced = this.books[clickedIndex];
+      this.books[clickedIndex] = this.hand.value;
+      // Mark the newly placed book as locked/correct
+      if (!this.lockedIndices.includes(trueIndex)) {
+        this.lockedIndices.push(trueIndex);
       }
-
-      this.checkWinCondition();
+      this.hand = { value: displaced };
+      this.showFeedback(`Now holding ${displaced}`, "info");
     }
+
+    this.renderBooks();
+    this.updateHoldingSlot();
+    this.checkWinCondition();
   }
+}
 
   updateHoldingSlot() {
     const slot = this.elements.holdingSlot;
