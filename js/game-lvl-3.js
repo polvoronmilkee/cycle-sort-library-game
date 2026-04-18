@@ -1,35 +1,25 @@
-import { CycleSort } from "./cycleSort";
-import { ManaSystem } from "./mana-system";
+import { CycleSort } from "./cycleSort.js";
+import { ManaSystem } from "./mana-system.js";
 
 class GameLevel3 {
-  generateRandomBooks(size) {
-    const numbers = new Set();
-
-    // generate random numbers
-    while (numbers.size < size) {
-      numbers.add(Math.floor(Math.random() * 99) + 1);
-    }
-    return Array.from(numbers);
-  }
-
   constructor() {
     this.level = 3;
 
-    this.books = this.generateRandomBooks(12);
+    this.books = this.generateRandomBooks(8);
     this.sortedBooks = [...this.books].sort((a, b) => a - b);
     this.hand = null;
     this.firstEmptyIndex = null;
     this.moves = 0;
     this.lockedIndices = this.books
-      .map((val, idx) => val === this.sortedBooks[idx] ? idx : null)
-      .filter(idx => idx !== null);
+      .map((val, idx) => (val === this.sortedBooks[idx] ? idx : null))
+      .filter((idx) => idx !== null);
 
     while (this.lockedIndices.length < 2) {
-      this.books = this.generateRandomBooks(12);
+      this.books = this.generateRandomBooks(8);
       this.sortedBooks = [...this.books].sort((a, b) => a - b);
       this.lockedIndices = this.books
-        .map((val, idx) => val === this.sortedBooks[idx] ? idx : null)
-        .filter(idx => idx !== null);
+        .map((val, idx) => (val === this.sortedBooks[idx] ? idx : null))
+        .filter((idx) => idx !== null);
     }
 
     this.parScore = CycleSort.sort([...this.books]).totalWrites;
@@ -43,6 +33,17 @@ class GameLevel3 {
     this.manaSystem = null;
 
     this.init();
+  }
+
+  
+  generateRandomBooks(size) {
+    const numbers = new Set();
+
+    // generate random numbers
+    while (numbers.size < size) {
+      numbers.add(Math.floor(Math.random() * 99) + 1);
+    }
+    return Array.from(numbers);
   }
 
   init() {
@@ -82,21 +83,24 @@ class GameLevel3 {
   updateManaUI() {
     const percentage = (this.manaSystem.currentMana / this.manaMax) * 100;
     this.elements.manaFill.style.width = `${percentage}%`;
-    this.elements.manaLabel.textContent =
-      `Mana: ${this.manaSystem.currentMana} / ${this.manaMax}`;
+    this.elements.manaLabel.textContent = `Mana: ${this.manaSystem.currentMana} / ${this.manaMax}`;
   }
 
   updateScoreDisplay() {
-    this.elements.scoreDisplay.textContent = this.parScore;
+    if (this.elements.scoreDisplay) {
+      this.elements.scoreDisplay.textContent = this.parScore;
+    }
   }
+
 
   renderBooks() {
     const display = this.elements.booksDisplay;
 
-    display.innerHTML = this.books.map((value, index) => {
-      const isLocked = this.lockedIndices.includes(index);
+    display.innerHTML = this.books
+      .map((value, index) => {
+        const isLocked = this.lockedIndices.includes(index);
 
-      return `
+        return `
         <div class="book 
           ${value === null ? "placeholder" : ""} 
           ${isLocked ? "locked" : ""}" 
@@ -105,7 +109,8 @@ class GameLevel3 {
           ${value === null ? "_" : value}
         </div>
       `;
-    }).join("");
+      })
+      .join("");
 
     display.querySelectorAll(".book").forEach((book) => {
       book.addEventListener("click", () => this.handleBookClick(book));
@@ -131,11 +136,11 @@ class GameLevel3 {
       this.updateManaUI();
 
       // remove from locked list
-      this.lockedIndices = this.lockedIndices.filter(i => i !== clickedIndex);
+      this.lockedIndices = this.lockedIndices.filter((i) => i !== clickedIndex);
 
       this.showFeedback(
         `You moved a correct book! (-${this.lockedPenalty} mana)`,
-        "error"
+        "error",
       );
     }
 
@@ -156,9 +161,9 @@ class GameLevel3 {
       const trueIndex = this.calculateTrueIndex(clickedValue);
       this.showFeedback(
         `Picked up ${clickedValue}. Goes to index ${trueIndex}.`,
-        "info"
+        "info",
       );
-    } 
+    }
     // PLACE
     else {
       const trueIndex = this.calculateTrueIndex(this.hand.value);
@@ -166,10 +171,7 @@ class GameLevel3 {
       if (clickedIndex !== trueIndex) {
         const stillHasMana = this.manaSystem.spendForWrongMove();
         this.updateManaUI();
-        this.showFeedback(
-          `Wrong spot! (-${this.wrongMoveCost} mana)`,
-          "error"
-        );
+        this.showFeedback(`Wrong spot! (-${this.wrongMoveCost} mana)`, "error");
         if (!stillHasMana) this.checkWinCondition();
         return;
       }
@@ -213,8 +215,7 @@ class GameLevel3 {
 
     if (this.hand) {
       slot.classList.remove("empty");
-      slot.innerHTML =
-        `<div class="book-in-hand"><span>${this.hand.value}</span></div>`;
+      slot.innerHTML = `<div class="book-in-hand"><span>${this.hand.value}</span></div>`;
     } else {
       slot.classList.add("empty");
       slot.innerHTML = "";
@@ -222,22 +223,14 @@ class GameLevel3 {
   }
 
   checkWinCondition() {
-    const isSorted = this.books.every(
-      (v, i) => v === this.sortedBooks[i]
-    );
+    const isSorted = this.books.every((v, i) => v === this.sortedBooks[i]);
 
     if (isSorted) {
       this.gameActive = false;
-      this.showFeedback(
-        `🎉 LEVEL 3 COMPLETE! Moves: ${this.moves}`,
-        "success"
-      );
+      this.showFeedback(`🎉 LEVEL 3 COMPLETE! Moves: ${this.moves}`, "success");
     } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
-      this.showFeedback(
-        "Out of mana! Library collapsed.",
-        "error"
-      );
+      this.showFeedback("Out of mana! Library collapsed.", "error");
     }
   }
 
@@ -252,16 +245,15 @@ class GameLevel3 {
     this.elements.resetBtn.addEventListener("click", () => location.reload());
     this.elements.homeBtn.addEventListener(
       "click",
-      () => (window.location.href = "../index.html")
+      () => (window.location.href = "../index.html"),
     );
     this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(
         "Some books are already correct—moving them will cost mana!",
-        "info"
+        "info",
       );
     });
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => new GameLevel3());
-
