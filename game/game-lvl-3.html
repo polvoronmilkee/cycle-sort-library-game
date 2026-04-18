@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE CYCLEBRIARIAN - Level 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/game.css" />
+    <link rel="stylesheet" href="../css/mana.css" />
+  </head>
+  <body>
+    <main>
+      <div class="game-container">
+        <div class="game-header">
+          <h1 class="game-title">LEVEL 2: DUAL CHAMBERS</h1>
+        </div>
+
+        <div class="game-main">
+          <div class="sidebar">
+            <div id="holding-slot" class="holding-slot empty"></div>
+            <div class="sidebar-label" style="margin-top: 20px">Mana Bar</div>
+            <div class="mana-panel">
+              <div class="mana-track">
+                <div id="mana-fill" class="mana-fill"></div>
+              </div>
+              <p id="mana-label" class="mana-label">Mana: 100 / 100</p>
+              <p class="mana-costs">
+                Correct move: -5 mana<br />Wrong index: -20 mana
+              </p>
+            </div>
+          </div>
+
+          <div class="shelf-area">
+            <div class="shelf-container">
+              <div id="books-display" class="books-display"></div>
+            </div>
+          </div>
+
+          <div class="par-score">
+            <div class="score-display">
+              <div class="score-label">Par Score</div>
+              <div class="score-value" id="score-display">4</div>
+              <div class="score-par">Best: 4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="game-footer">
+          <button class="btn-game secondary" id="reset-btn">Reset</button>
+          <button class="btn-game secondary" id="hint-btn">How To Play</button>
+          <button class="btn-game" id="home-btn">Back to Menu</button>
+        </div>
+      </div>
+      <div id="feedback" class="feedback"></div>
+    </main>
+    <script type="module" src="../js/game-lvl-2.js"></script>
+  </body>
+</html>
