@@ -75,6 +75,7 @@ class GameLevel3 {
       scoreDisplay: document.getElementById("score-display"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
+      nextLevelBtn: document.getElementById("next-level-btn"),
       homeBtn: document.getElementById("home-btn"),
       feedback: document.getElementById("feedback"),
     };
@@ -159,7 +160,7 @@ if (this.hand === null) {
 
     // UPDATED FEEDBACK: Matches your required format even on penalty
     this.showFeedback(
-      `Violation! Picked up ${clickedValue}. Goes to index ${trueIndex}. (-${this.lockedPenalty} mana)`,
+      `This book is already in the right place! Picked up ${clickedValue}. Goes to index ${trueIndex}. (-${this.lockedPenalty} mana)`,
       "error"
     );
   } else {
@@ -239,6 +240,7 @@ if (this.hand === null) {
     if (isSorted) {
       this.gameActive = false;
       this.showFeedback(`🎉 LEVEL 3 COMPLETE! Moves: ${this.moves}`, "success");
+      this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
       this.showFeedback("Out of mana! Library collapsed.", "error");
@@ -258,6 +260,9 @@ if (this.hand === null) {
       "click",
       () => (window.location.href = "../index.html"),
     );
+    this.elements.nextLevelBtn?.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
     this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(
         "Some books are already correct—moving them will cost mana!",

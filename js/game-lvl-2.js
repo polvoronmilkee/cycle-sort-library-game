@@ -49,6 +49,7 @@ class GameLevel2 {
       scoreDisplay: document.getElementById("score-display"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
+      nextLevelBtn: document.getElementById("next-level-btn"),
       homeBtn: document.getElementById("home-btn"),
       feedback: document.getElementById("feedback"),
     };
@@ -162,6 +163,7 @@ class GameLevel2 {
     if (isSorted) {
       this.gameActive = false;
       this.showFeedback(`🎉 LEVEL 2 COMPLETE! Moves: ${this.moves}`, "success");
+      this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
       this.showFeedback("Out of mana! Library collapsed.", "error");
@@ -178,6 +180,9 @@ class GameLevel2 {
   attachEventListeners() {
     this.elements.resetBtn.addEventListener("click", () => location.reload());
     this.elements.homeBtn.addEventListener("click", () => window.location.href = "../index.html");
+    this.elements.nextLevelBtn?.addEventListener("click", () => {
+      window.location.href = "./game-lvl-3.html";
+    });
     this.elements.hintBtn.addEventListener("click", () => {
         this.showFeedback("Finish the first cycle, then pick a book from the remaining messy section.", "info");
     });
