@@ -4,8 +4,8 @@ import { ManaSystem } from "./mana-system.js";
 class GameLevel2 {
   constructor() {
     this.level = 2;
-    this.books = [3, 1, 2, 6, 4, 5]; 
-    this.sortedBooks = [1, 2, 3, 4, 5, 6]; 
+    this.books = this.generateRandomBooks(6);
+    this.sortedBooks = [...this.books].sort((a, b) => a - b);
     this.hand = null;
     this.firstEmptyIndex = null;
     this.moves = 0;
@@ -20,6 +20,16 @@ class GameLevel2 {
     this.manaSystem = null;
 
     this.init();
+  }
+
+  generateRandomBooks(size) {
+    const numbers = new Set();
+
+    // generate random numbers
+    while (numbers.size < size) {
+      numbers.add(Math.floor(Math.random() * 50) + 1);
+    }
+    return Array.from(numbers);
   }
 
   init() {
