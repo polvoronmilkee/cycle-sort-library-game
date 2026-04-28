@@ -13,7 +13,6 @@ export class CycleSort {
    */
   static sort(array) {
     const arr = [...array];
-    const movements = [];
     let writes = 0;
 
     // Loop through the array
@@ -44,14 +43,6 @@ export class CycleSort {
       arr[pos] = temp;
       writes++;
 
-      movements.push({
-        action: "swap",
-        fromIndex: cycleStart,
-        toIndex: pos,
-        item: temp,
-        displaced: item,
-      });
-
       // Rotate rest of the cycle
       while (pos !== cycleStart) {
         pos = cycleStart;
@@ -74,38 +65,15 @@ export class CycleSort {
         arr[pos] = temp;
         writes++;
 
-        movements.push({
-          action: "swap",
-          fromIndex: cycleStart,
-          toIndex: pos,
-          item: temp,
-          displaced: item,
-        });
       }
     }
 
     return {
       sorted: arr,
-      movements,
       totalWrites: writes,
     };
   }
 
-  /**
-   * Find the correct index for an item (number of items smaller than it)
-   * @param {number[]} array - The array
-   * @param {number} item - The item to find position for
-   * @returns {number} - The index where this item belongs
-   */
-  static findTrueIndex(array, item) {
-    let count = 0;
-    for (let i = 0; i < array.length; i++) {
-      if (array[i] < item && i !== array.indexOf(item)) {
-        count++;
-      }
-    }
-    return count;
-  }
 
   /**
    * Check if an array is sorted

@@ -1,16 +1,19 @@
-import "../components/game-shelf.js";
-import { CycleSort } from "./cycleSort.js";
-import { ManaSystem } from "./mana-system.js";
+import "../../components/game-shelf.js";
+import { CycleSort } from "../cycleSort.js";
+import { ManaSystem } from "../mana-system.js";
 
 class GameLevel1 {
   constructor() {
     this.level = 1;
-    this.books = [3, 1, 4, 2]; // Out of order - forms cycles
-    this.sortedBooks = [1, 2, 3, 4]; // Target
+    this.books = this.generateRandomBooks(5);   // Random order of numbers 1..5
+    this.sortedBooks = [...this.books].sort((a, b) => a - b);
     this.hand = null;
-    this.firstEmptyIndex = null; // Start of the active cycle chain
+    this.firstEmptyIndex = null;
     this.moves = 0;
-    this.writes = CycleSort.sort(this.books).totalWrites;
+
+    // Par score based on the minimal number of writes for the current permutation
+    this.writes = CycleSort.sort([...this.books]).totalWrites;
+
     this.manaMax = 100;
     this.correctMoveCost = 5;
     this.wrongMoveCost = 20;
@@ -18,6 +21,16 @@ class GameLevel1 {
     this.manaSystem = null;
 
     this.init();
+  }
+
+  // Creates a shuffled array of numbers from 1..n
+  generateRandomBooks(n) {
+    const arr = Array.from({ length: n }, (_, i) => i + 1);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   init() {
@@ -28,7 +41,7 @@ class GameLevel1 {
       correctMoveCost: this.correctMoveCost,
       wrongMoveCost: this.wrongMoveCost,
     });
-    this.updateManaLabel();
+    this.updateManaUI();
     this.updateScoreDisplay();
     this.renderBooks();
     this.attachEventListeners();
@@ -45,6 +58,8 @@ class GameLevel1 {
       manaLabel: document.getElementById("mana-label"),
       manaFill: document.getElementById("mana-fill"),
       scoreDisplay: document.getElementById("score-display"),
+      scoreWrite: document.getElementById("score-write"),
+      finalScore: document.getElementById("final-score"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
       nextLevelBtn: document.getElementById("next-level-btn"),
@@ -54,18 +69,33 @@ class GameLevel1 {
     };
   }
 
-  updateManaLabel() {
+  updateManaUI() {
+    const percentage = (this.manaSystem.currentMana / this.manaMax) * 100;
+    this.elements.manaFill.style.width = `${percentage}%`;
     this.elements.manaLabel.textContent = `Mana: ${this.manaSystem.currentMana} / ${this.manaMax}`;
   }
 
   updateScoreDisplay() {
-    this.elements.scoreDisplay.textContent = this.writes;
+    this.elements.scoreDisplay.textContent = this.moves;
+    if (this.elements.scoreWrite) {
+      this.elements.scoreWrite.textContent = `Best: ${this.writes}`;
+    }
   }
 
-  updateManaUI() {
-    const percentage = (this.manaSystem.currentMana / this.manaMax) * 100;
-    this.elements.manaFill.style.width = `${percentage}%`;
-    this.updateManaLabel();
+  getFinalStars() {
+    if (this.moves <= this.writes) {
+      return "⭐⭐⭐";
+    }
+    if (this.moves === this.writes + 1) {
+      return "⭐⭐";
+    }
+    return "⭐";
+  }
+
+  showFinalScore() {
+    if (!this.elements.finalScore) return;
+    this.elements.finalScore.textContent = `Final Score: ${this.getFinalStars()}`;
+    this.elements.finalScore.classList.remove("hidden");
   }
 
   renderBooks() {
@@ -74,25 +104,20 @@ class GameLevel1 {
       .map(
         (value, index) => `
         <div class="book ${value === null ? "placeholder" : ""}" data-index="${index}" data-value="${value}">
-          ${value === null ? "_" : value}
+          <span class="book-value">${value === null ? "_" : value}</span>
+          <span class="book-index">(${index})</span>
         </div>
       `,
       )
       .join("");
 
-    // Add click handlers to books
     display.querySelectorAll(".book").forEach((book) => {
       book.addEventListener("click", () => this.handleBookClick(book));
     });
   }
 
-  /**
-   * Calculate where a book should go based on cycle sort logic
-   * Book goes to position = count of books smaller than it
-   */
   calculateTrueIndex(bookValue) {
-    return this.books.filter((value) => value !== null && value < bookValue)
-      .length;
+    return this.sortedBooks.indexOf(bookValue);
   }
 
   handleBookClick(bookElement) {
@@ -108,75 +133,59 @@ class GameLevel1 {
     }
 
     if (this.hand === null) {
-      // Start a chain only from a misplaced book.
       const pickedTrueIndex = this.calculateTrueIndex(clickedValue);
       if (pickedTrueIndex === clickedIndex) {
         this.showFeedback(
-          `Book ${clickedValue} is already in the correct spot. Pick a misplaced book.`,
+          `Book ${clickedValue} is correct. Find a misplaced one!`,
           "error",
         );
         return;
       }
 
-      this.firstEmptyIndex = clickedIndex; // Remember the first hole created
+      this.firstEmptyIndex = clickedIndex;
       this.hand = { value: clickedValue };
       this.books[clickedIndex] = null;
       this.renderBooks();
       this.updateHoldingSlot();
-
       this.showFeedback(
-        `Picked up ${clickedValue}. Its true index is ${pickedTrueIndex}. Click that slot to continue the chain.`,
+        `Picked up ${clickedValue}. It belongs at index ${pickedTrueIndex}.`,
         "info",
       );
     } else {
-      // Player must place held book into its true index.
       const trueIndex = this.calculateTrueIndex(this.hand.value);
 
       if (clickedIndex !== trueIndex) {
         const stillHasMana = this.manaSystem.spendForWrongMove();
         this.updateManaUI();
         this.showFeedback(
-          `Wrong spot. Book ${this.hand.value} belongs at index ${trueIndex}. (-${this.wrongMoveCost} mana)`,
+          `Wrong spot! (-${this.wrongMoveCost} mana)`,
           "error",
         );
-        if (!stillHasMana) {
-          this.checkWinCondition();
-        }
+        if (!stillHasMana) this.checkWinCondition();
         return;
       }
 
-      // Place held book and spend mana for a correct move.
       this.moves++;
       this.manaSystem.spendForCorrectMove();
       this.updateManaUI();
-      this.updateMoveCounter();
+      this.updateScoreDisplay();
 
-      // Closing step: held book belongs to the original empty hole.
       if (trueIndex === this.firstEmptyIndex) {
         this.books[trueIndex] = this.hand.value;
         this.hand = null;
         this.firstEmptyIndex = null;
         this.renderBooks();
         this.updateHoldingSlot();
-        this.showFeedback(
-          `Cycle closed. Continue by picking another misplaced book.`,
-          "info",
-        );
-        this.checkWinCondition();
+        this.showFeedback(`Cycle closed! Start the next one.`, "success");
       } else {
         const displacedValue = this.books[clickedIndex];
         this.books[clickedIndex] = this.hand.value;
         this.hand = { value: displacedValue };
         this.renderBooks();
         this.updateHoldingSlot();
-
-        const nextIndex = this.calculateTrueIndex(displacedValue);
-        this.showFeedback(
-          `Correct move (-${this.correctMoveCost} mana). Now holding ${displacedValue}. Next true index: ${nextIndex}.`,
-          "info",
-        );
-        this.checkWinCondition();
+        this.showFeedback(`Correct! Now holding ${displacedValue}.`, "info");
       }
+      this.checkWinCondition();
     }
   }
 
@@ -191,65 +200,44 @@ class GameLevel1 {
     }
   }
 
-  updateMoveCounter() {
-    // Move counter display is optional - implement if needed
-  }
-
   checkWinCondition() {
     const isSorted = this.books.every(
       (val, idx) => val === this.sortedBooks[idx],
     );
-
     if (isSorted) {
       this.gameActive = false;
-      const message =
-        this.moves <= this.writes
-          ? `🎉 PERFECT! Sorted in ${this.moves} moves!`
-          : `✓ Level Complete! ${this.moves} moves (par: ${this.writes})`;
-      this.showFeedback(message, "success");
+      this.showFinalScore();
+      this.showFeedback(`🎉 LEVEL 1 COMPLETE! Moves: ${this.moves}`, "success");
       this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
-      this.showFeedback("Out of mana. Click Reset to try again.", "error");
+      this.showFeedback("Out of mana! Library collapsed.", "error");
     }
   }
 
   showFeedback(message, type = "info") {
     const feedback = this.elements.feedback;
     feedback.textContent = message;
-    feedback.classList.remove("error", "success");
-    if (type !== "info") {
-      feedback.classList.add(type);
-    }
-    feedback.classList.add("show");
-    setTimeout(() => {
-      feedback.classList.remove("show");
-    }, 3500);
+    feedback.className = `feedback show ${type}`;
+    setTimeout(() => feedback.classList.remove("show"), 3000);
   }
 
   attachEventListeners() {
-    this.elements.resetBtn.addEventListener("click", () => {
-      location.reload();
+    this.elements.resetBtn.addEventListener("click", () => location.reload());
+    this.elements.homeBtn.addEventListener(
+      "click",
+      () => (window.location.href = "../index.html"),
+    );
+    this.elements.nextLevelBtn?.addEventListener("click", () => {
+      window.location.href = "./game-lvl-2.html";
     });
-
     this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(
         "Pick a misplaced book, place it at its true index, pick displaced book, repeat until the chain returns to the starting hole.",
         "info",
       );
     });
-
-    this.elements.homeBtn.addEventListener("click", () => {
-      window.location.href = "../index.html";
-    });
-
-    this.elements.nextLevelBtn?.addEventListener("click", () => {
-      window.location.href = "./game-lvl-2.html";
-    });
   }
 }
 
-// Start the game when page loads
-document.addEventListener("DOMContentLoaded", () => {
-  new GameLevel1();
-});
+document.addEventListener("DOMContentLoaded", () => new GameLevel1());

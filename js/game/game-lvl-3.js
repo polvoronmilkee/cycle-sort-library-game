@@ -1,27 +1,17 @@
-import "../components/game-shelf.js";
-import { CycleSort } from "./cycleSort.js";
-import { ManaSystem } from "./mana-system.js";
+import "../../components/game-shelf.js";
+import { CycleSort } from "../cycleSort.js";
+import { ManaSystem } from "../mana-system.js";
 
 class GameLevel3 {
   constructor() {
     this.level = 3;
-
-    this.books = this.generateRandomBooks(8);
-    this.sortedBooks = [...this.books].sort((a, b) => a - b);
+    const { books, sortedBooks, lockedIndices } = this.generatePlayableSetup(8);
+    this.books = books;
+    this.sortedBooks = sortedBooks;
     this.hand = null;
     this.firstEmptyIndex = null;
     this.moves = 0;
-    this.lockedIndices = this.books
-      .map((val, idx) => (val === this.sortedBooks[idx] ? idx : null))
-      .filter((idx) => idx !== null);
-
-    while (this.lockedIndices.length < 2) {
-      this.books = this.generateRandomBooks(8);
-      this.sortedBooks = [...this.books].sort((a, b) => a - b);
-      this.lockedIndices = this.books
-        .map((val, idx) => (val === this.sortedBooks[idx] ? idx : null))
-        .filter((idx) => idx !== null);
-    }
+    this.lockedIndices = lockedIndices;
 
     this.writes = CycleSort.sort([...this.books]).totalWrites;
 
@@ -44,6 +34,22 @@ class GameLevel3 {
       numbers.add(Math.floor(Math.random() * 99) + 1);
     }
     return Array.from(numbers);
+  }
+
+  generatePlayableSetup(size) {
+    let books;
+    let sortedBooks;
+    let lockedIndices;
+
+    do {
+      books = this.generateRandomBooks(size);
+      sortedBooks = [...books].sort((a, b) => a - b);
+      lockedIndices = books
+        .map((value, index) => (value === sortedBooks[index] ? index : null))
+        .filter((index) => index !== null);
+    } while (CycleSort.isSorted(books) || lockedIndices.length < 2);
+
+    return { books, sortedBooks, lockedIndices };
   }
 
   init() {
@@ -73,6 +79,8 @@ class GameLevel3 {
       manaLabel: document.getElementById("mana-label"),
       manaFill: document.getElementById("mana-fill"),
       scoreDisplay: document.getElementById("score-display"),
+      scoreWrite: document.getElementById("score-write"),
+      finalScore: document.getElementById("final-score"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
       nextLevelBtn: document.getElementById("next-level-btn"),
@@ -89,8 +97,27 @@ class GameLevel3 {
 
   updateScoreDisplay() {
     if (this.elements.scoreDisplay) {
-      this.elements.scoreDisplay.textContent = this.writes;
+      this.elements.scoreDisplay.textContent = this.moves;
     }
+    if (this.elements.scoreWrite) {
+      this.elements.scoreWrite.textContent = `Best: ${this.writes}`;
+    }
+  }
+
+  getFinalStars() {
+    if (this.moves <= this.writes) {
+      return "⭐⭐⭐";
+    }
+    if (this.moves === this.writes + 1) {
+      return "⭐⭐";
+    }
+    return "⭐";
+  }
+
+  showFinalScore() {
+    if (!this.elements.finalScore) return;
+    this.elements.finalScore.textContent = `Final Score: ${this.getFinalStars()}`;
+    this.elements.finalScore.classList.remove("hidden");
   }
 
   renderBooks() {
@@ -106,7 +133,8 @@ class GameLevel3 {
           ${isLocked ? "locked" : ""}" 
           data-index="${index}" 
           data-value="${value}">
-          ${value === null ? "_" : value}
+          <span class="book-value">${value === null ? "_" : value}</span>
+          <span class="book-index">(${index})</span>
         </div>
       `;
       })
@@ -195,6 +223,7 @@ class GameLevel3 {
       this.moves++;
       this.manaSystem.spendForCorrectMove();
       this.updateManaUI();
+      this.updateScoreDisplay();
 
       if (trueIndex === this.firstEmptyIndex) {
         // Cycle closed
@@ -240,6 +269,7 @@ class GameLevel3 {
 
     if (isSorted) {
       this.gameActive = false;
+      this.showFinalScore();
       this.showFeedback(`🎉 LEVEL 3 COMPLETE! Moves: ${this.moves}`, "success");
       this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
@@ -262,7 +292,7 @@ class GameLevel3 {
       () => (window.location.href = "../index.html"),
     );
     this.elements.nextLevelBtn?.addEventListener("click", () => {
-      window.location.href = "../index.html";
+      window.location.href = "./game-lvl-4.html";
     });
     this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(

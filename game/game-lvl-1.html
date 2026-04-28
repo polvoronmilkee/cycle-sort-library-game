@@ -43,18 +43,20 @@
             <game-shelf class="shelf-container">
               <div id="books-display" class="books-display"></div>
             </game-shelf>
+            <div id="final-score" class="final-score hidden">
+              Final Score: ⭐⭐⭐
+            </div>
           </div>
 
           <!-- Right: Total Writes -->
           <div class="write-score">
             <div class="score-display">
-              <div class="score-label">Total Writes</div>
-              <div class="score-value" id="score-display">4</div>
-              <div class="score-write">Best: 4</div>
+              <div class="score-label">Your Writes</div>
+              <div class="score-value" id="score-display">0</div>
+              <div class="score-write" id="score-write">Best: 4</div>
             </div>
           </div>
         </div>
-
 
         <div class="game-footer">
           <button class="btn-game secondary" id="reset-btn">Reset</button>
@@ -67,8 +69,8 @@
       </div>
 
       <div id="feedback" class="feedback"></div>
+    
     </main>
-
-    <script type="module" src="../js/game-lvl-1.js"></script>
+    <script type="module" src="../js/game/game-lvl-1.js"></script>
   </body>
 </html>
