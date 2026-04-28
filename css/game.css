@@ -132,13 +132,10 @@ body.game-view {
 }
 
 .shelf-container {
-  background-image: url("../assets/shelf.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  aspect-ratio: 16 / 9;
   position: relative;
-  border: 4px solid #3d2817;
+  display: block;
+  width: 100%;
+  min-height: 240px;
 }
 
 .books-display {
@@ -147,13 +144,14 @@ body.game-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  padding: 40px 20px;
+  gap: clamp(8px, 1.8vw, 15px);
+  padding: clamp(10px, 2vw, 18px) clamp(12px, 2.2vw, 20px);
+  box-sizing: border-box;
 }
 
 .book {
-  width: 70px;
-  height: 90px;
+  width: clamp(48px, 7vw, 70px);
+  height: clamp(64px, 9vw, 90px);
   background: linear-gradient(135deg, #f0a84b 0%, #d4901e 100%);
   border: 3px solid #1a120c;
   display: flex;
@@ -161,7 +159,7 @@ body.game-view {
   justify-content: center;
   font-weight: bold;
   color: #1a120c;
-  font-size: 1.8rem;
+  font-size: clamp(1rem, 2.2vw, 1.8rem);
   cursor: pointer;
   transition:
     transform 100ms ease,
@@ -185,8 +183,8 @@ body.game-view {
   color: rgba(26, 18, 12, 0.5);
 }
 
-/* Right Sidebar - Par Score */
-.par-score {
+/* Right Sidebar - Total Writes */
+.write-score {
   width: 150px;
   text-align: center;
 }
@@ -201,7 +199,6 @@ body.game-view {
 .score-label {
   font-size: 0.6rem;
   color: var(--gold);
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 10px;
 }
@@ -212,7 +209,7 @@ body.game-view {
   text-shadow: 1px 1px 0 #2f2112;
 }
 
-.score-par {
+.score-write {
   font-size: 0.5rem;
   color: #f5e7bd;
   margin-top: 8px;
@@ -332,5 +329,3 @@ body.game-view {
     padding: 30px 10px;
   }
 }
-
-

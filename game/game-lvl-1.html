@@ -40,25 +40,28 @@
 
           <!-- Center: Shelf -->
           <div class="shelf-area">
-            <div class="shelf-container">
+            <game-shelf class="shelf-container">
               <div id="books-display" class="books-display"></div>
-            </div>
+            </game-shelf>
           </div>
 
-          <!-- Right: Par Score -->
-          <div class="par-score">
+          <!-- Right: Total Writes -->
+          <div class="write-score">
             <div class="score-display">
-              <div class="score-label">Par Score</div>
+              <div class="score-label">Total Writes</div>
               <div class="score-value" id="score-display">4</div>
-              <div class="score-par">Best: 4</div>
+              <div class="score-write">Best: 4</div>
             </div>
           </div>
         </div>
 
+
         <div class="game-footer">
           <button class="btn-game secondary" id="reset-btn">Reset</button>
           <button class="btn-game secondary" id="hint-btn">How To Play</button>
-          <button class="btn-game hidden" id="next-level-btn">Next Level</button>
+          <button class="btn-game hidden" id="next-level-btn">
+            Next Level
+          </button>
           <button class="btn-game" id="home-btn">Back to Menu</button>
         </div>
       </div>
