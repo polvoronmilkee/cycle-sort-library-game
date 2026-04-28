@@ -84,6 +84,9 @@ body.game-view {
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
+  color: var(--gold-dark);
+  text-shadow: 3px 2px 0 #2f2112;
+  font-size: 1.8rem;
 }
 
 .holding-slot.empty::after {
