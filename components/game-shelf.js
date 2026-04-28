@@ -68,7 +68,6 @@ if (!customElements.get(SHELF_TAG_NAME)) {
 
           .book {
             width: 22px;
-            border-radius: 3px 3px 0 0;
             background: #d9b07a;
             box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
             flex-shrink: 0;

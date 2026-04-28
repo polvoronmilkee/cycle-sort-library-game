@@ -183,8 +183,8 @@ body.game-view {
   color: rgba(26, 18, 12, 0.5);
 }
 
-/* Right Sidebar - Par Score */
-.par-score {
+/* Right Sidebar - Total Writes */
+.write-score {
   width: 150px;
   text-align: center;
 }
@@ -199,7 +199,6 @@ body.game-view {
 .score-label {
   font-size: 0.6rem;
   color: var(--gold);
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 10px;
 }
@@ -210,7 +209,7 @@ body.game-view {
   text-shadow: 1px 1px 0 #2f2112;
 }
 
-.score-par {
+.score-write {
   font-size: 0.5rem;
   color: #f5e7bd;
   margin-top: 8px;

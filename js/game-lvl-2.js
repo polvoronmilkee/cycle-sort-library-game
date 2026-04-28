@@ -1,4 +1,4 @@
-import "./game-shelf.js";
+import "../components/game-shelf.js";
 import { CycleSort } from "./cycleSort.js";
 import { ManaSystem } from "./mana-system.js";
 
@@ -12,7 +12,7 @@ class GameLevel2 {
     this.moves = 0;
 
     // Par Score will naturally be higher for more cycles
-    this.parScore = CycleSort.sort([...this.books]).totalWrites;
+    this.writes = CycleSort.sort([...this.books]).totalWrites;
 
     this.manaMax = 100;
     this.correctMoveCost = 5;
@@ -73,7 +73,7 @@ class GameLevel2 {
   }
 
   updateScoreDisplay() {
-    this.elements.scoreDisplay.textContent = this.parScore;
+    this.elements.scoreDisplay.textContent = this.writes;
   }
 
   renderBooks() {
@@ -171,7 +171,7 @@ class GameLevel2 {
     const slot = this.elements.holdingSlot;
     if (this.hand) {
       slot.classList.remove("empty");
-      slot.innerHTML = `<div class="book-in-hand"><span>${this.hand.value}</span></div>`;
+      slot.innerHTML = `<div class="book-in-hand"><span class="book-number">${this.hand.value}</span></div>`;
     } else {
       slot.classList.add("empty");
       slot.innerHTML = "";

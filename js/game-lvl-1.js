@@ -1,4 +1,4 @@
-import "./game-shelf.js";
+import "../components/game-shelf.js";
 import { CycleSort } from "./cycleSort.js";
 import { ManaSystem } from "./mana-system.js";
 
@@ -10,7 +10,7 @@ class GameLevel1 {
     this.hand = null;
     this.firstEmptyIndex = null; // Start of the active cycle chain
     this.moves = 0;
-    this.parScore = CycleSort.sort(this.books).totalWrites;
+    this.writes = CycleSort.sort(this.books).totalWrites;
     this.manaMax = 100;
     this.correctMoveCost = 5;
     this.wrongMoveCost = 20;
@@ -59,7 +59,7 @@ class GameLevel1 {
   }
 
   updateScoreDisplay() {
-    this.elements.scoreDisplay.textContent = this.parScore;
+    this.elements.scoreDisplay.textContent = this.writes;
   }
 
   updateManaUI() {
@@ -203,9 +203,9 @@ class GameLevel1 {
     if (isSorted) {
       this.gameActive = false;
       const message =
-        this.moves <= this.parScore
+        this.moves <= this.writes
           ? `🎉 PERFECT! Sorted in ${this.moves} moves!`
-          : `✓ Level Complete! ${this.moves} moves (par: ${this.parScore})`;
+          : `✓ Level Complete! ${this.moves} moves (par: ${this.writes})`;
       this.showFeedback(message, "success");
       this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
