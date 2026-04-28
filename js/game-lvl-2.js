@@ -5,7 +5,7 @@ import { ManaSystem } from "./mana-system.js";
 class GameLevel2 {
   constructor() {
     this.level = 2;
-    this.books = this.generateRandomBooks(6);
+    this.books = this.generatePlayableBooks(6);
     this.sortedBooks = [...this.books].sort((a, b) => a - b);
     this.hand = null;
     this.firstEmptyIndex = null;
@@ -33,6 +33,14 @@ class GameLevel2 {
     return Array.from(numbers);
   }
 
+  generatePlayableBooks(size) {
+    let books = this.generateRandomBooks(size);
+    while (CycleSort.isSorted(books)) {
+      books = this.generateRandomBooks(size);
+    }
+    return books;
+  }
+
   init() {
     this.setupDOM();
     this.cacheElements();
@@ -58,6 +66,7 @@ class GameLevel2 {
       manaLabel: document.getElementById("mana-label"),
       manaFill: document.getElementById("mana-fill"),
       scoreDisplay: document.getElementById("score-display"),
+      scoreWrite: document.getElementById("score-write"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
       nextLevelBtn: document.getElementById("next-level-btn"),
@@ -73,7 +82,10 @@ class GameLevel2 {
   }
 
   updateScoreDisplay() {
-    this.elements.scoreDisplay.textContent = this.writes;
+    this.elements.scoreDisplay.textContent = this.moves;
+    if (this.elements.scoreWrite) {
+      this.elements.scoreWrite.textContent = `Best: ${this.writes}`;
+    }
   }
 
   renderBooks() {
@@ -145,6 +157,7 @@ class GameLevel2 {
       this.moves++;
       this.manaSystem.spendForCorrectMove();
       this.updateManaUI();
+      this.updateScoreDisplay();
 
       if (trueIndex === this.firstEmptyIndex) {
         // Cycle finished

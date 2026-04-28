@@ -159,12 +159,13 @@ body.game-view {
   justify-content: center;
   font-weight: bold;
   color: #1a120c;
-  font-size: clamp(1rem, 2.2vw, 1.8rem);
+  font-size: clamp(1rem, 1.7vw, 1.8rem);
   cursor: pointer;
   transition:
     transform 100ms ease,
     box-shadow 100ms ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  margin: -5px;
 }
 
 .book:hover {
