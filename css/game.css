@@ -138,6 +138,18 @@ body.game-view {
   min-height: 240px;
 }
 
+.final-score {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #f5e7bd;
+  text-shadow: 1px 1px 0 #2f2112;
+}
+
+.final-score.hidden {
+  display: none;
+}
+
 .books-display {
   width: 100%;
   height: 100%;

@@ -59,6 +59,7 @@ class GameLevel1 {
       manaFill: document.getElementById("mana-fill"),
       scoreDisplay: document.getElementById("score-display"),
       scoreWrite: document.getElementById("score-write"),
+      finalScore: document.getElementById("final-score"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
       nextLevelBtn: document.getElementById("next-level-btn"),
@@ -79,6 +80,22 @@ class GameLevel1 {
     if (this.elements.scoreWrite) {
       this.elements.scoreWrite.textContent = `Best: ${this.writes}`;
     }
+  }
+
+  getFinalStars() {
+    if (this.moves <= this.writes) {
+      return "⭐⭐⭐";
+    }
+    if (this.moves === this.writes + 1) {
+      return "⭐⭐";
+    }
+    return "⭐";
+  }
+
+  showFinalScore() {
+    if (!this.elements.finalScore) return;
+    this.elements.finalScore.textContent = `Final Score: ${this.getFinalStars()}`;
+    this.elements.finalScore.classList.remove("hidden");
   }
 
   renderBooks() {
@@ -189,6 +206,7 @@ class GameLevel1 {
     );
     if (isSorted) {
       this.gameActive = false;
+      this.showFinalScore();
       this.showFeedback(`🎉 LEVEL 1 COMPLETE! Moves: ${this.moves}`, "success");
       this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
