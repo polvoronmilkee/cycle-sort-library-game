@@ -116,7 +116,8 @@ class GameLevel3 {
           ${isLocked ? "locked" : ""}" 
           data-index="${index}" 
           data-value="${value}">
-          ${value === null ? "_" : value}
+          <span class="book-value">${value === null ? "_" : value}</span>
+          <span class="book-index">(${index})</span>
         </div>
       `;
       })

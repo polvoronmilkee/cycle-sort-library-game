@@ -94,7 +94,8 @@ class GameLevel2 {
       .map(
         (value, index) => `
         <div class="book ${value === null ? "placeholder" : ""}" data-index="${index}" data-value="${value}">
-          ${value === null ? "_" : value}
+          <span class="book-value">${value === null ? "_" : value}</span>
+          <span class="book-index">(${index})</span>
         </div>
       `,
       )
