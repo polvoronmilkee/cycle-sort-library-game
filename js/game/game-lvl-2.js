@@ -1,17 +1,17 @@
-import "../components/game-shelf.js";
-import { CycleSort } from "./cycleSort.js";
-import { ManaSystem } from "./mana-system.js";
+import "../../components/game-shelf.js";
+import { CycleSort } from "../cycleSort.js";
+import { ManaSystem } from "../mana-system.js";
 
-class GameLevel1 {
+class GameLevel2 {
   constructor() {
-    this.level = 1;
-    this.books = this.generateRandomBooks(5);   // Random order of numbers 1..5
+    this.level = 2;
+    this.books = this.generatePlayableBooks(6);
     this.sortedBooks = [...this.books].sort((a, b) => a - b);
     this.hand = null;
     this.firstEmptyIndex = null;
     this.moves = 0;
 
-    // Par score based on the minimal number of writes for the current permutation
+    // Par Score will naturally be higher for more cycles
     this.writes = CycleSort.sort([...this.books]).totalWrites;
 
     this.manaMax = 100;
@@ -23,14 +23,22 @@ class GameLevel1 {
     this.init();
   }
 
-  // Creates a shuffled array of numbers from 1..n
-  generateRandomBooks(n) {
-    const arr = Array.from({ length: n }, (_, i) => i + 1);
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+  generateRandomBooks(size) {
+    const numbers = new Set();
+
+    // generate random numbers
+    while (numbers.size < size) {
+      numbers.add(Math.floor(Math.random() * 50) + 1);
     }
-    return arr;
+    return Array.from(numbers);
+  }
+
+  generatePlayableBooks(size) {
+    let books = this.generateRandomBooks(size);
+    while (CycleSort.isSorted(books)) {
+      books = this.generateRandomBooks(size);
+    }
+    return books;
   }
 
   init() {
@@ -64,7 +72,6 @@ class GameLevel1 {
       nextLevelBtn: document.getElementById("next-level-btn"),
       homeBtn: document.getElementById("home-btn"),
       feedback: document.getElementById("feedback"),
-      gameTitle: document.querySelector(".game-title"),
     };
   }
 
@@ -100,6 +107,7 @@ class GameLevel1 {
   }
 
   calculateTrueIndex(bookValue) {
+    // index = count of items smaller than current
     return this.sortedBooks.indexOf(bookValue);
   }
 
@@ -138,22 +146,22 @@ class GameLevel1 {
       const trueIndex = this.calculateTrueIndex(this.hand.value);
 
       if (clickedIndex !== trueIndex) {
+        // WRONG INDEX - Deplete 20 Mana
         const stillHasMana = this.manaSystem.spendForWrongMove();
         this.updateManaUI();
-        this.showFeedback(
-          `Wrong spot! (-${this.wrongMoveCost} mana)`,
-          "error",
-        );
+        this.showFeedback(`Wrong spot! (-${this.wrongMoveCost} mana)`, "error");
         if (!stillHasMana) this.checkWinCondition();
         return;
       }
 
+      // CORRECT INDEX - Deplete 5 Mana
       this.moves++;
       this.manaSystem.spendForCorrectMove();
       this.updateManaUI();
       this.updateScoreDisplay();
 
       if (trueIndex === this.firstEmptyIndex) {
+        // Cycle finished
         this.books[trueIndex] = this.hand.value;
         this.hand = null;
         this.firstEmptyIndex = null;
@@ -161,6 +169,7 @@ class GameLevel1 {
         this.updateHoldingSlot();
         this.showFeedback(`Cycle closed! Start the next one.`, "success");
       } else {
+        // Swap continue
         const displacedValue = this.books[clickedIndex];
         this.books[clickedIndex] = this.hand.value;
         this.hand = { value: displacedValue };
@@ -189,7 +198,7 @@ class GameLevel1 {
     );
     if (isSorted) {
       this.gameActive = false;
-      this.showFeedback(`🎉 LEVEL 1 COMPLETE! Moves: ${this.moves}`, "success");
+      this.showFeedback(`🎉 LEVEL 2 COMPLETE! Moves: ${this.moves}`, "success");
       this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
@@ -211,15 +220,15 @@ class GameLevel1 {
       () => (window.location.href = "../index.html"),
     );
     this.elements.nextLevelBtn?.addEventListener("click", () => {
-      window.location.href = "./game-lvl-2.html";
+      window.location.href = "./game-lvl-3.html";
     });
     this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(
-        "Pick a misplaced book, place it at its true index, pick displaced book, repeat until the chain returns to the starting hole.",
+        "Finish the first cycle, then pick a book from the remaining messy section.",
         "info",
       );
     });
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => new GameLevel1());
+document.addEventListener("DOMContentLoaded", () => new GameLevel2());

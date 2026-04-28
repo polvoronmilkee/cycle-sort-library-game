@@ -1,6 +1,6 @@
-import "../components/game-shelf.js";
-import { CycleSort } from "./cycleSort.js";
-import { ManaSystem } from "./mana-system.js";
+import "../../components/game-shelf.js";
+import { CycleSort } from "../cycleSort.js";
+import { ManaSystem } from "../mana-system.js";
 
 class GameLevel3 {
   constructor() {
@@ -274,7 +274,7 @@ class GameLevel3 {
       () => (window.location.href = "../index.html"),
     );
     this.elements.nextLevelBtn?.addEventListener("click", () => {
-      window.location.href = "../index.html";
+      window.location.href = "./game-lvl-4.html";
     });
     this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(

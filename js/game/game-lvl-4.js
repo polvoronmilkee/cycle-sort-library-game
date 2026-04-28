@@ -1,17 +1,16 @@
-import "../components/game-shelf.js";
-import { CycleSort } from "./cycleSort.js";
-import { ManaSystem } from "./mana-system.js";
+import "../../components/game-shelf.js";
+import { CycleSort } from "../cycleSort.js";
+import { ManaSystem } from "../mana-system.js";
 
-class GameLevel2 {
+class GameLevel4 {
   constructor() {
-    this.level = 2;
-    this.books = this.generatePlayableBooks(6);
+    this.level = 4;
+    this.books = this.generatePlayableBooks(7);
     this.sortedBooks = [...this.books].sort((a, b) => a - b);
     this.hand = null;
     this.firstEmptyIndex = null;
     this.moves = 0;
 
-    // Par Score will naturally be higher for more cycles
     this.writes = CycleSort.sort([...this.books]).totalWrites;
 
     this.manaMax = 100;
@@ -23,20 +22,37 @@ class GameLevel2 {
     this.init();
   }
 
-  generateRandomBooks(size) {
-    const numbers = new Set();
-
-    // generate random numbers
-    while (numbers.size < size) {
-      numbers.add(Math.floor(Math.random() * 50) + 1);
+  generateDuplicateBooks(size) {
+    const baseValues = [];
+    while (baseValues.length < size - 2) {
+      const candidate = Math.floor(Math.random() * 20) + 1;
+      if (!baseValues.includes(candidate)) {
+        baseValues.push(candidate);
+      }
     }
-    return Array.from(numbers);
+
+    const values = [...baseValues];
+    const firstDuplicate = baseValues[Math.floor(Math.random() * baseValues.length)];
+    let secondDuplicate = baseValues[Math.floor(Math.random() * baseValues.length)];
+
+    while (secondDuplicate === firstDuplicate) {
+      secondDuplicate = baseValues[Math.floor(Math.random() * baseValues.length)];
+    }
+
+    values.push(firstDuplicate, secondDuplicate);
+
+    for (let i = values.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [values[i], values[j]] = [values[j], values[i]];
+    }
+
+    return values;
   }
 
   generatePlayableBooks(size) {
-    let books = this.generateRandomBooks(size);
+    let books = this.generateDuplicateBooks(size);
     while (CycleSort.isSorted(books)) {
-      books = this.generateRandomBooks(size);
+      books = this.generateDuplicateBooks(size);
     }
     return books;
   }
@@ -106,9 +122,21 @@ class GameLevel2 {
     });
   }
 
-  calculateTrueIndex(bookValue) {
-    // index = count of items smaller than current
-    return this.sortedBooks.indexOf(bookValue);
+  getTargetIndices(bookValue) {
+    return this.sortedBooks
+      .map((value, index) => (value === bookValue ? index : null))
+      .filter((index) => index !== null);
+  }
+
+  formatIndices(indices) {
+    if (indices.length === 1) {
+      return `index ${indices[0]}`;
+    }
+    return `indices ${indices.join(" or ")}`;
+  }
+
+  isCorrectSlot(bookValue, index) {
+    return this.sortedBooks[index] === bookValue;
   }
 
   handleBookClick(bookElement) {
@@ -124,10 +152,11 @@ class GameLevel2 {
     }
 
     if (this.hand === null) {
-      const pickedTrueIndex = this.calculateTrueIndex(clickedValue);
-      if (pickedTrueIndex === clickedIndex) {
+      const targetIndices = this.getTargetIndices(clickedValue);
+
+      if (this.isCorrectSlot(clickedValue, clickedIndex)) {
         this.showFeedback(
-          `Book ${clickedValue} is correct. Find a misplaced one!`,
+          `Book ${clickedValue} is already in a valid slot. Find a misplaced one!`,
           "error",
         );
         return;
@@ -139,14 +168,13 @@ class GameLevel2 {
       this.renderBooks();
       this.updateHoldingSlot();
       this.showFeedback(
-        `Picked up ${clickedValue}. It belongs at index ${pickedTrueIndex}.`,
+        `Picked up ${clickedValue}. It belongs at ${this.formatIndices(targetIndices)}.`,
         "info",
       );
     } else {
-      const trueIndex = this.calculateTrueIndex(this.hand.value);
+      const targetIndices = this.getTargetIndices(this.hand.value);
 
-      if (clickedIndex !== trueIndex) {
-        // WRONG INDEX - Deplete 20 Mana
+      if (!this.isCorrectSlot(this.hand.value, clickedIndex)) {
         const stillHasMana = this.manaSystem.spendForWrongMove();
         this.updateManaUI();
         this.showFeedback(`Wrong spot! (-${this.wrongMoveCost} mana)`, "error");
@@ -154,22 +182,30 @@ class GameLevel2 {
         return;
       }
 
-      // CORRECT INDEX - Deplete 5 Mana
+      if (
+        clickedIndex !== this.firstEmptyIndex &&
+        this.books[clickedIndex] === this.hand.value
+      ) {
+        this.showFeedback(
+          `That slot already has ${this.hand.value}. Use the empty slot or another matching index: ${this.formatIndices(targetIndices)}.`,
+          "error",
+        );
+        return;
+      }
+
       this.moves++;
       this.manaSystem.spendForCorrectMove();
       this.updateManaUI();
       this.updateScoreDisplay();
 
-      if (trueIndex === this.firstEmptyIndex) {
-        // Cycle finished
-        this.books[trueIndex] = this.hand.value;
+      if (clickedIndex === this.firstEmptyIndex) {
+        this.books[clickedIndex] = this.hand.value;
         this.hand = null;
         this.firstEmptyIndex = null;
         this.renderBooks();
         this.updateHoldingSlot();
         this.showFeedback(`Cycle closed! Start the next one.`, "success");
       } else {
-        // Swap continue
         const displacedValue = this.books[clickedIndex];
         this.books[clickedIndex] = this.hand.value;
         this.hand = { value: displacedValue };
@@ -194,11 +230,12 @@ class GameLevel2 {
 
   checkWinCondition() {
     const isSorted = this.books.every(
-      (val, idx) => val === this.sortedBooks[idx],
+      (value, index) => value === this.sortedBooks[index],
     );
+
     if (isSorted) {
       this.gameActive = false;
-      this.showFeedback(`🎉 LEVEL 2 COMPLETE! Moves: ${this.moves}`, "success");
+      this.showFeedback(`LEVEL 4 COMPLETE! Moves: ${this.moves}`, "success");
       this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
@@ -220,15 +257,15 @@ class GameLevel2 {
       () => (window.location.href = "../index.html"),
     );
     this.elements.nextLevelBtn?.addEventListener("click", () => {
-      window.location.href = "./game-lvl-3.html";
+      window.location.href = "../index.html";
     });
     this.elements.hintBtn.addEventListener("click", () => {
       this.showFeedback(
-        "Finish the first cycle, then pick a book from the remaining messy section.",
+        "Duplicate values can belong in more than one sorted slot. Follow the matching indices and avoid swapping a number into an identical number.",
         "info",
       );
     });
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => new GameLevel2());
+document.addEventListener("DOMContentLoaded", () => new GameLevel4());
