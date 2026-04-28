@@ -2,9 +2,9 @@
 
 This repository is the final project for `SE 2236: Algorithms`.
 
-Submitted by:
-- `Danielle Anne Poral` - `BSSE-2`
-- `Sophia Marielle Mendoza` - `BSSE-2`
+Submitted by (BSSE-2):
+- `Danielle Anne Poral` 
+- `Sophia Marielle Mendoza` 
 
 ## About the Project
 
