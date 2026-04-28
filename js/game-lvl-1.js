@@ -133,6 +133,7 @@ class GameLevel1 {
       parIndicator: document.getElementById("par-indicator"),
       resetBtn: document.getElementById("reset-btn"),
       hintBtn: document.getElementById("hint-btn"),
+      nextLevelBtn: document.getElementById("next-level-btn"),
       homeBtn: document.getElementById("home-btn"),
       feedback: document.getElementById("feedback"),
     };
@@ -322,6 +323,7 @@ class GameLevel1 {
           ? `🎉 PERFECT! Sorted in ${this.moves} moves!`
           : `✓ Level Complete! ${this.moves} moves (par: ${this.parScore})`;
       this.showFeedback(message, "success");
+      this.elements.nextLevelBtn?.classList.remove("hidden");
     } else if (this.manaSystem.currentMana <= 0) {
       this.gameActive = false;
       this.showFeedback("Out of mana. Click Reset to try again.", "error");
@@ -355,6 +357,10 @@ class GameLevel1 {
 
     this.elements.homeBtn.addEventListener("click", () => {
       window.location.href = "../index.html";
+    });
+
+    this.elements.nextLevelBtn?.addEventListener("click", () => {
+      window.location.href = "./game-lvl-2.html";
     });
   }
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>THE CYCLEBRIARIAN - Level 1</title>
+    <title>THE CYCLEBRIARIAN - Level 3</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,24 +13,22 @@
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/game.css" />
     <link rel="stylesheet" href="../css/mana.css" />
-    <link rel="stylesheet" href="../css/indexed.css" />
-    <link rel="stylesheet" href="../css/par.css" />
-    <link rel="stylesheet" href="../css/modal.css" />
   </head>
   <body>
     <main>
       <div class="game-container">
         <div class="game-header">
-          <h1 class="game-title">LEVEL 1: THE ARCHIVE</h1>
+          <h1 class="game-title">LEVEL 3: STAYOUT STACKS</h1>
+          <p class="level-info">
+            Some books start locked in the right place. Picking up a correct book costs will cost you mana.
+          </p>
         </div>
 
         <div class="game-main">
-          <!-- Left: Holding Slot -->
           <div class="sidebar">
-            <div class="sidebar-label"></div>
             <div id="holding-slot" class="holding-slot empty"></div>
+            <div class="sidebar-label" style="margin-top: 20px">Mana Bar</div>
             <div class="mana-panel">
-              <div class="mana-title" aria-hidden="true"></div>
               <div class="mana-track">
                 <div id="mana-fill" class="mana-fill"></div>
               </div>
@@ -41,22 +39,17 @@
             </div>
           </div>
 
-          <!-- Center: Shelf -->
           <div class="shelf-area">
             <div class="shelf-container">
               <div id="books-display" class="books-display"></div>
             </div>
           </div>
 
-          <!-- Right: Par Score -->
           <div class="par-score">
             <div class="score-display">
               <div class="score-label">Par Score</div>
-              <div class="score-par" id="score-par">Best: 4</div>
-              <div class="score-moves">
-                Moves: <span id="move-display">0</span>
-              </div>
-              <div class="score-status under" id="par-indicator">Under Par</div>
+              <div class="score-value" id="score-display">0</div>
+              <div class="score-par">Best:</div>
             </div>
           </div>
         </div>
@@ -64,14 +57,12 @@
         <div class="game-footer">
           <button class="btn-game secondary" id="reset-btn">Reset</button>
           <button class="btn-game secondary" id="hint-btn">How To Play</button>
-          <button class="btn-game hidden" id="next-level-btn">Next Level</button>
+          <button class="btn-game hidden" id="next-level-btn">Finish</button>
           <button class="btn-game" id="home-btn">Back to Menu</button>
         </div>
       </div>
-
       <div id="feedback" class="feedback"></div>
     </main>
-
-    <script type="module" src="../js/game-lvl-1.js"></script>
+    <script type="module" src="../js/game-lvl-3.js"></script>
   </body>
 </html>

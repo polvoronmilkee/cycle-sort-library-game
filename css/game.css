@@ -238,6 +238,10 @@ body.game-view {
   background: #c9a33d;
 }
 
+.btn-game.hidden {
+  display: none;
+}
+
 /* Feedback Messages */
 .feedback {
   position: fixed;
@@ -306,3 +310,5 @@ body.game-view {
     padding: 64px 20px 132px;
   }
 }
+
+
