@@ -1,3 +1,4 @@
+import "./game-shelf.js";
 import { CycleSort } from "./cycleSort.js";
 import { ManaSystem } from "./mana-system.js";
 

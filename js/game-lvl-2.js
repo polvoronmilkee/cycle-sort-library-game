@@ -1,3 +1,4 @@
+import "./game-shelf.js";
 import { CycleSort } from "./cycleSort.js";
 import { ManaSystem } from "./mana-system.js";
 
@@ -9,10 +10,10 @@ class GameLevel2 {
     this.hand = null;
     this.firstEmptyIndex = null;
     this.moves = 0;
-    
+
     // Par Score will naturally be higher for more cycles
     this.parScore = CycleSort.sort([...this.books]).totalWrites;
-    
+
     this.manaMax = 100;
     this.correctMoveCost = 5;
     this.wrongMoveCost = 20;
@@ -40,7 +41,7 @@ class GameLevel2 {
       correctMoveCost: this.correctMoveCost,
       wrongMoveCost: this.wrongMoveCost,
     });
-    this.updateManaUI(); 
+    this.updateManaUI();
     this.updateScoreDisplay();
     this.renderBooks();
     this.attachEventListeners();
@@ -78,11 +79,14 @@ class GameLevel2 {
   renderBooks() {
     const display = this.elements.booksDisplay;
     display.innerHTML = this.books
-      .map((value, index) => `
+      .map(
+        (value, index) => `
         <div class="book ${value === null ? "placeholder" : ""}" data-index="${index}" data-value="${value}">
           ${value === null ? "_" : value}
         </div>
-      `).join("");
+      `,
+      )
+      .join("");
 
     display.querySelectorAll(".book").forEach((book) => {
       book.addEventListener("click", () => this.handleBookClick(book));
@@ -109,7 +113,10 @@ class GameLevel2 {
     if (this.hand === null) {
       const pickedTrueIndex = this.calculateTrueIndex(clickedValue);
       if (pickedTrueIndex === clickedIndex) {
-        this.showFeedback(`Book ${clickedValue} is correct. Find a misplaced one!`, "error");
+        this.showFeedback(
+          `Book ${clickedValue} is correct. Find a misplaced one!`,
+          "error",
+        );
         return;
       }
 
@@ -118,7 +125,10 @@ class GameLevel2 {
       this.books[clickedIndex] = null;
       this.renderBooks();
       this.updateHoldingSlot();
-      this.showFeedback(`Picked up ${clickedValue}. It belongs at index ${pickedTrueIndex}.`, "info");
+      this.showFeedback(
+        `Picked up ${clickedValue}. It belongs at index ${pickedTrueIndex}.`,
+        "info",
+      );
     } else {
       const trueIndex = this.calculateTrueIndex(this.hand.value);
 
@@ -169,7 +179,9 @@ class GameLevel2 {
   }
 
   checkWinCondition() {
-    const isSorted = this.books.every((val, idx) => val === this.sortedBooks[idx]);
+    const isSorted = this.books.every(
+      (val, idx) => val === this.sortedBooks[idx],
+    );
     if (isSorted) {
       this.gameActive = false;
       this.showFeedback(`🎉 LEVEL 2 COMPLETE! Moves: ${this.moves}`, "success");
@@ -189,12 +201,18 @@ class GameLevel2 {
 
   attachEventListeners() {
     this.elements.resetBtn.addEventListener("click", () => location.reload());
-    this.elements.homeBtn.addEventListener("click", () => window.location.href = "../index.html");
+    this.elements.homeBtn.addEventListener(
+      "click",
+      () => (window.location.href = "../index.html"),
+    );
     this.elements.nextLevelBtn?.addEventListener("click", () => {
       window.location.href = "./game-lvl-3.html";
     });
     this.elements.hintBtn.addEventListener("click", () => {
-        this.showFeedback("Finish the first cycle, then pick a book from the remaining messy section.", "info");
+      this.showFeedback(
+        "Finish the first cycle, then pick a book from the remaining messy section.",
+        "info",
+      );
     });
   }
 }
