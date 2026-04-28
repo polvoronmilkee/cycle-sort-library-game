@@ -16,6 +16,7 @@ class GameLevel4 {
     this.manaMax = 100;
     this.correctMoveCost = 5;
     this.wrongMoveCost = 20;
+    this.lockedPenalty = 15;
     this.gameActive = true;
     this.manaSystem = null;
 
@@ -155,8 +156,26 @@ class GameLevel4 {
       const targetIndices = this.getTargetIndices(clickedValue);
 
       if (this.isCorrectSlot(clickedValue, clickedIndex)) {
+        this.manaSystem.currentMana -= this.lockedPenalty;
+        this.updateManaUI();
+
+        if (this.manaSystem.currentMana <= 0) {
+          this.gameActive = false;
+          this.showFeedback(
+            `Mana depleted! Moving a correct book cost you the last of your energy.`,
+            "error",
+          );
+          this.checkWinCondition();
+          return;
+        }
+
+        this.firstEmptyIndex = clickedIndex;
+        this.hand = { value: clickedValue };
+        this.books[clickedIndex] = null;
+        this.renderBooks();
+        this.updateHoldingSlot();
         this.showFeedback(
-          `Book ${clickedValue} is already in a valid slot. Find a misplaced one!`,
+          `This book is already in the right place! Picked up ${clickedValue}. Goes to ${this.formatIndices(targetIndices)}. (-${this.lockedPenalty} mana)`,
           "error",
         );
         return;
